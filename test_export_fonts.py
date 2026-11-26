@@ -10,7 +10,7 @@ from shapely.affinity import translate
 from shapely.geometry import Polygon
 from shapely.ops import unary_union
 
-from export_fonts import GLYPH_NAMES, HERE, UNITS_PER_DESIGN_UNIT, WEIGHTS, font_units, main
+from export_fonts import FONT_CHARACTERS, GLYPH_NAMES, HERE, UNITS_PER_DESIGN_UNIT, WEIGHTS, font_units, main
 from not4k_font.glyphs import CHARACTERS, build_glyphs
 from not4k_font.spacing import compose_line, edition_kerning, least_shift, ra_clearance
 
@@ -52,7 +52,7 @@ class ExportFontsTest(unittest.TestCase):
             main()
 
     def test_two_formats_map_both_cases_and_give_space_40_units(self):
-        expected_chars = set(CHARACTERS + CHARACTERS.upper() + " ")
+        expected_chars = set(FONT_CHARACTERS + FONT_CHARACTERS.upper() + " ")
         for style, _, weight_class in WEIGHTS:
             for extension in ("ttf", "woff2"):
                 with self.subTest(style=style, extension=extension):
@@ -174,3 +174,21 @@ class ExportFontsTest(unittest.TestCase):
                 metrics = font["hmtx"].metrics
                 self.assertEqual(metrics["two.tnum.afterR"][0], metrics["two.tnum"][0])
                 self.assertEqual(pair_adjustment(font, "R", "two.tnum.afterR"), 0)
+
+    def test_ui_symbols_have_nonempty_outlines_in_both_weights_and_formats(self):
+        required = ".,:;-/%+()'\"!?#&×·—…=←→↑↓[]\\`*◇"
+        for style, weight, _ in WEIGHTS:
+            for extension in ("ttf", "woff2"):
+                with self.subTest(style=style, extension=extension):
+                    with TTFont(self.output / f"NOT4K-{style}.{extension}") as font:
+                        cmap = font.getBestCmap()
+                        glyphs = font["glyf"]
+                        metrics = font["hmtx"].metrics
+                        for char in required:
+                            with self.subTest(char=char):
+                                name = cmap[ord(char)]
+                                self.assertGreater(glyphs[name].numberOfContours, 0)
+                                self.assertGreater(metrics[name][0], 0)
+                        for left, right in (("R", "period"), ("four", "exclam"), ("period", "quotesingle")):
+                            shift = metrics[left][0] + pair_adjustment(font, left, right)
+                            self.assertEqual(shift, glyphs[left].xMax + font_units(weight.letter_space))

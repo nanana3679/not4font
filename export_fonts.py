@@ -19,12 +19,17 @@ from shapely.geometry.polygon import orient
 from not4k_font.geometry import pieces_of
 from not4k_font.glyphs import BOLD, CHARACTERS, REGULAR, build_glyphs
 from not4k_font.spacing import cut_overlaps, edition_kerning, least_shift
+from not4k_font.symbols import SYMBOLS, build_symbols
 
 
 HERE = Path(__file__).parent
 UNITS_PER_DESIGN_UNIT = 20
 UNITS_PER_EM = 128 * UNITS_PER_DESIGN_UNIT
-GLYPH_NAMES = {char: UV2AGL[ord(char.upper())] for char in CHARACTERS}
+FONT_CHARACTERS = CHARACTERS + SYMBOLS
+GLYPH_NAMES = {
+    char: UV2AGL.get(ord(char.upper()), f"uni{ord(char.upper()):04X}")
+    for char in FONT_CHARACTERS
+}
 WEIGHTS = (("Regular", REGULAR, 400), ("Bold", BOLD, 700))
 
 
@@ -123,28 +128,44 @@ def substitution_features(tabular_names, clipped_names):
     )
 
 
+def pair_shifts_for(glyphs, bodies, letter_space, extra_kerning):
+    shifts = {}
+    for left in GLYPH_NAMES:
+        for right in GLYPH_NAMES:
+            if left in SYMBOLS or right in SYMBOLS:
+                # Keep short marks in reading order and clear the overhangs of R and 4.
+                shift = glyphs[left].bounds[2] - bodies[right].bounds[0] + letter_space
+            else:
+                shift = least_shift(bodies[left], bodies[right], letter_space)
+                shift += extra_kerning.get((left, right), 0)
+            shifts[left, right] = shift
+    return shifts
+
+
 def build_font(edition, style, weight, weight_class):
     glyphs, bodies = build_glyphs(weight)
     letter_space = weight.letter_space
     extra_kerning = edition_kerning(glyphs, bodies, letter_space)
+    symbols = build_symbols(weight)
+    glyphs.update(symbols)
+    bodies.update(symbols)
     weight_record = edition["weights"][style.lower()]
     space_advance = font_units(edition["rules"]["space"])
 
     outlines = {name: TTGlyphPen(None).glyph() for name in (".notdef", "space")}
     metrics = {name: (space_advance, 0) for name in outlines}
     for char, name in GLYPH_NAMES.items():
-        left, _, right, _ = weight_record["glyphs"][char.upper()]["spacingBody"]
+        if char in symbols:
+            left, _, right, _ = bodies[char].bounds
+        else:
+            left, _, right, _ = weight_record["glyphs"][char.upper()]["spacingBody"]
         outlines[name] = draw_glyph(glyphs[char])
         metrics[name] = (font_units(right - left), font_units(glyphs[char].bounds[0]))
     tabular_names = add_tabular_digits(outlines, metrics, letter_space)
-    pair_shifts = {
-        (left, right): least_shift(bodies[left], bodies[right], letter_space) + extra_kerning.get((left, right), 0)
-        for left in GLYPH_NAMES
-        for right in GLYPH_NAMES
-    }
+    pair_shifts = pair_shifts_for(glyphs, bodies, letter_space, extra_kerning)
     clipped_names = add_clipped_glyphs(glyphs, pair_shifts, weight, tabular_names, outlines, metrics)
 
-    cmap = {ord(char): GLYPH_NAMES[char.lower()] for char in CHARACTERS + ascii_uppercase}
+    cmap = {ord(char): GLYPH_NAMES[char.lower()] for char in FONT_CHARACTERS + ascii_uppercase}
     cmap[ord(" ")] = "space"
     family = "NOT4K"
     ps_name = f"{family}-{style}"
