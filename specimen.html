@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NOT4K 1판 글꼴 비교</title>
+<style>
+  @font-face {
+    font-family: NOT4K;
+    src: url("out/fonts/NOT4K-Regular.woff2") format("woff2");
+    font-weight: 400;
+  }
+  @font-face {
+    font-family: NOT4K;
+    src: url("out/fonts/NOT4K-Bold.woff2") format("woff2");
+    font-weight: 700;
+  }
+  body { max-inline-size: 72rem; margin: 2rem auto; padding-inline: 1rem; font-family: system-ui, sans-serif; }
+  svg { display: block; inline-size: 100%; block-size: auto; }
+  image { opacity: 0.45; }
+  text {
+    font: 128px NOT4K;
+    font-kerning: normal;
+    text-rendering: geometricPrecision;
+    fill: #bf250b;
+    fill-opacity: 0.55;
+    white-space: pre;
+  }
+  #bold text { font-weight: 700; }
+</style>
+<h1>NOT4K 1판 글꼴 비교</h1>
+<p>회색은 1판 SVG 견본이고, 붉은색은 WOFF2로 그린 글자입니다.</p>
+<template id="lines">
+  <svg xmlns="http://www.w3.org/2000/svg">
+    <image/>
+    <text x="12" y="112">abcdefghijklm</text>
+    <text x="12" y="252">nopqrstuvwxyz</text>
+    <text x="12" y="392">0123456789</text>
+    <text x="12" y="532">song select</text>
+    <text x="12" y="672">perfect great good miss</text>
+    <text x="12" y="812">high score 9876</text>
+    <text x="12" y="952">level 12 volume 85</text>
+  </svg>
+</template>
+<section id="regular">
+  <h2>Regular</h2>
+</section>
+<section id="bold">
+  <h2>Bold</h2>
+</section>
+<script type="module">
+  for (const weight of ["regular", "bold"]) {
+    const source = await fetch(`ed1/specimen-${weight}.svg`);
+    const reference = new DOMParser().parseFromString(await source.text(), "image/svg+xml").documentElement;
+    const viewBox = reference.getAttribute("viewBox");
+    const [, , width, height] = viewBox.split(/\s+/);
+    const specimen = document.querySelector("#lines").content.cloneNode(true);
+    specimen.querySelector("svg").setAttribute("viewBox", viewBox);
+    const image = specimen.querySelector("image");
+    image.setAttribute("href", source.url);
+    image.setAttribute("width", width);
+    image.setAttribute("height", height);
+    document.getElementById(weight).append(specimen);
+  }
+</script>
+</html>
