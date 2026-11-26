@@ -10,7 +10,9 @@ from shapely.affinity import translate
 from shapely.geometry import Polygon
 from shapely.ops import unary_union
 
-from export_fonts import CHARS, GLYPH_NAMES, HERE, UNITS_PER_DESIGN_UNIT, V72, V81, WEIGHTS, font_units, main
+from export_fonts import GLYPH_NAMES, HERE, UNITS_PER_DESIGN_UNIT, WEIGHTS, font_units, main
+from not4k_font.glyphs import CHARACTERS, build_glyphs
+from not4k_font.spacing import compose_line, edition_kerning, least_shift, ra_clearance
 
 
 def pair_adjustment(font, left, right):
@@ -50,7 +52,7 @@ class ExportFontsTest(unittest.TestCase):
             main()
 
     def test_two_formats_map_both_cases_and_give_space_40_units(self):
-        expected_chars = set(CHARS + CHARS.upper() + " ")
+        expected_chars = set(CHARACTERS + CHARACTERS.upper() + " ")
         for style, _, weight_class in WEIGHTS:
             for extension in ("ttf", "woff2"):
                 with self.subTest(style=style, extension=extension):
@@ -60,7 +62,7 @@ class ExportFontsTest(unittest.TestCase):
                         self.assertEqual(font["OS/2"].usWeightClass, weight_class)
                         self.assertEqual(font["OS/2"].sCapHeight / font["head"].unitsPerEm, 100 / 128)
                         self.assertEqual(font["hmtx"].metrics[cmap[ord(" ")]], (font_units(40), 0))
-                        for char in CHARS:
+                        for char in CHARACTERS:
                             glyph = cmap[ord(char)]
                             self.assertEqual(glyph, cmap[ord(char.upper())])
                             self.assertGreater(font["glyf"][glyph].numberOfContours, 0)
@@ -80,13 +82,13 @@ class ExportFontsTest(unittest.TestCase):
 
     def test_ra_adds_25_percent_of_clearance_and_rx_uses_default_gap(self):
         for style, weight, _ in WEIGHTS:
-            glyphs, bodies, _ = V81.decided(weight)
-            extra_ra = V72.full_kern(weight, glyphs, bodies, "r", "a") * 0.25
+            glyphs, bodies = build_glyphs(weight)
+            extra_ra = ra_clearance(glyphs, bodies, weight.letter_space) * 0.25
             self.assertGreater(extra_ra, 0)
             with TTFont(self.output / f"NOT4K-{style}.woff2") as font:
                 for right, extra in (("a", extra_ra), ("x", 0)):
                     with self.subTest(style=style, pair=f"R{right.upper()}"):
-                        expected = V72.least_shift(bodies["r"], bodies[right], weight.sp) + extra
+                        expected = least_shift(bodies["r"], bodies[right], weight.letter_space) + extra
                         advance, _ = font["hmtx"].metrics["R"]
                         actual = advance + pair_adjustment(font, "R", GLYPH_NAMES[right])
                         self.assertEqual(actual, font_units(expected))
@@ -96,7 +98,7 @@ class ExportFontsTest(unittest.TestCase):
             for extension in ("ttf", "woff2"):
                 with self.subTest(style=style, extension=extension):
                     with TTFont(self.output / f"NOT4K-{style}.{extension}") as font:
-                        self.check_tabular_digits(font, weight.sp)
+                        self.check_tabular_digits(font, weight.letter_space)
 
     def check_tabular_digits(self, font, letter_space):
         self.assertIn("GSUB", font)
@@ -138,7 +140,8 @@ class ExportFontsTest(unittest.TestCase):
             "Bold": "abdefhijklmnprwxz247",
         }
         for style, weight, _ in WEIGHTS:
-            glyphs, bodies, kerns = V81.decided(weight)
+            glyphs, bodies = build_glyphs(weight)
+            kerns = edition_kerning(glyphs, bodies, weight.letter_space)
             with self.subTest(style=style), TTFont(self.output / f"NOT4K-{style}.woff2") as font:
                 gsub = font["GSUB"].table
                 features = {record.FeatureTag: record.Feature for record in gsub.FeatureList.FeatureRecord}
@@ -156,8 +159,8 @@ class ExportFontsTest(unittest.TestCase):
                         self.assertEqual(metrics[alternate], (metrics[name][0], outlines[alternate].xMin))
                         self.assertEqual(pair_adjustment(font, "R", alternate), pair_adjustment(font, "R", name))
 
-                        shift = V72.least_shift(bodies["r"], bodies[right], weight.sp) + kerns.get(("r", right), 0)
-                        original_pair = V72.set_line_kerned(f"r{right}", glyphs, bodies, weight, kerns)
+                        shift = least_shift(bodies["r"], bodies[right], weight.letter_space) + kerns.get(("r", right), 0)
+                        original_pair = compose_line(f"r{right}", glyphs, bodies, weight, kerns)
                         expected = translate(original_pair.difference(glyphs["r"]), xoff=-shift)
                         deviation = glyph_geometry(outlines[alternate]).symmetric_difference(expected).area
                         self.assertLess(deviation, expected.length / UNITS_PER_DESIGN_UNIT)

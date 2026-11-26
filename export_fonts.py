@@ -15,15 +15,17 @@ from fontTools.misc.timeTools import timestampSinceEpoch
 from fontTools.pens.ttGlyphPen import TTGlyphPen
 from shapely.affinity import translate
 from shapely.geometry.polygon import orient
-from shapely.ops import unary_union
 
-from export_ed1 import CHARS, HERE, V72, V81
+from not4k_font.geometry import pieces_of
+from not4k_font.glyphs import BOLD, CHARACTERS, REGULAR, build_glyphs
+from not4k_font.spacing import cut_overlaps, edition_kerning, least_shift
 
 
+HERE = Path(__file__).parent
 UNITS_PER_DESIGN_UNIT = 20
 UNITS_PER_EM = 128 * UNITS_PER_DESIGN_UNIT
-GLYPH_NAMES = {char: UV2AGL[ord(char.upper())] for char in CHARS}
-WEIGHTS = (("Regular", V81.REGULAR, 400), ("Bold", V81.BOLD, 700))
+GLYPH_NAMES = {char: UV2AGL[ord(char.upper())] for char in CHARACTERS}
+WEIGHTS = (("Regular", REGULAR, 400), ("Bold", BOLD, 700))
 
 
 def font_units(value):
@@ -34,7 +36,7 @@ def draw_glyph(shape):
     pen = TTGlyphPen(None)
     if shape.is_empty:
         return pen.glyph()
-    for polygon in getattr(shape, "geoms", (shape,)):
+    for polygon in pieces_of(shape):
         polygon = orient(polygon, sign=-1)
         for ring in (polygon.exterior, *polygon.interiors):
             first, *rest = ring.coords[:-1]
@@ -82,9 +84,8 @@ def add_tabular_digits(outlines, metrics, letter_space):
 
 def add_clipped_glyphs(glyphs, pair_shifts, weight, tabular_names, outlines, metrics):
     r_name = GLYPH_NAMES["r"]
-    r_pieces = V72.V69.pieces_of(glyphs["r"])
+    r_pieces = pieces_of(glyphs["r"])
     r_advance = metrics[r_name][0] / UNITS_PER_DESIGN_UNIT
-    min_area = 200 * (weight.s / 30) ** 2
     candidates = {
         name: (glyphs[char], pair_shifts["r", char])
         for char, name in GLYPH_NAMES.items()
@@ -98,13 +99,10 @@ def add_clipped_glyphs(glyphs, pair_shifts, weight, tabular_names, outlines, met
     names = {}
     for name, (shape, shift) in candidates.items():
         positioned = translate(shape, xoff=shift)
-        # Use the specimen compositor's overlap and small-piece thresholds.
-        winners = [piece for piece in r_pieces if piece.intersection(positioned).area > 0.5]
-        if not winners:
+        cut = cut_overlaps(positioned, r_pieces, weight)
+        if cut is None:
             continue
-        cut = positioned.difference(unary_union(winners).buffer(weight.g, join_style="mitre"))
-        kept = unary_union([piece for piece in V72.V69.pieces_of(cut) if piece.area >= min_area])
-        glyph = draw_glyph(translate(kept, xoff=-shift))
+        glyph = draw_glyph(translate(cut, xoff=-shift))
         clipped_name = f"{name}.afterR"
         outlines[clipped_name] = glyph
         metrics[clipped_name] = (metrics[name][0], glyph.coordinates.calcIntBounds()[0])
@@ -126,9 +124,10 @@ def substitution_features(tabular_names, clipped_names):
 
 
 def build_font(edition, style, weight, weight_class):
-    glyphs, bodies, extra_kerning = V81.decided(weight)
+    glyphs, bodies = build_glyphs(weight)
+    letter_space = weight.letter_space
+    extra_kerning = edition_kerning(glyphs, bodies, letter_space)
     weight_record = edition["weights"][style.lower()]
-    letter_space = weight_record["numbers"]["letterSpace"]
     space_advance = font_units(edition["rules"]["space"])
 
     outlines = {name: TTGlyphPen(None).glyph() for name in (".notdef", "space")}
@@ -139,13 +138,13 @@ def build_font(edition, style, weight, weight_class):
         metrics[name] = (font_units(right - left), font_units(glyphs[char].bounds[0]))
     tabular_names = add_tabular_digits(outlines, metrics, letter_space)
     pair_shifts = {
-        (left, right): V72.least_shift(bodies[left], bodies[right], letter_space) + extra_kerning.get((left, right), 0)
+        (left, right): least_shift(bodies[left], bodies[right], letter_space) + extra_kerning.get((left, right), 0)
         for left in GLYPH_NAMES
         for right in GLYPH_NAMES
     }
     clipped_names = add_clipped_glyphs(glyphs, pair_shifts, weight, tabular_names, outlines, metrics)
 
-    cmap = {ord(char): GLYPH_NAMES[char.lower()] for char in CHARS + ascii_uppercase}
+    cmap = {ord(char): GLYPH_NAMES[char.lower()] for char in CHARACTERS + ascii_uppercase}
     cmap[ord(" ")] = "space"
     family = "NOT4K"
     ps_name = f"{family}-{style}"
