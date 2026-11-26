@@ -1,7 +1,7 @@
 import json
 import unittest
 from pathlib import Path
-from string import digits
+from string import ascii_uppercase, digits
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
@@ -17,15 +17,29 @@ from not4k_font.symbols import SYMBOLS
 
 
 def pair_adjustment(font, left, right):
+    adjustment = 0
     for lookup in font["GPOS"].table.LookupList.Lookup:
         for subtable in lookup.SubTable:
             if left not in subtable.Coverage.glyphs:
                 continue
+            if subtable.Format == 2:
+                left_class = subtable.ClassDef1.classDefs.get(left, 0)
+                right_class = subtable.ClassDef2.classDefs.get(right, 0)
+                record = subtable.Class1Record[left_class].Class2Record[right_class]
+                adjustment += getattr(record.Value1, "XAdvance", 0)
+                break
             index = subtable.Coverage.glyphs.index(left)
-            for record in subtable.PairSet[index].PairValueRecord:
-                if record.SecondGlyph == right:
-                    return record.Value1.XAdvance
-    return 0
+            record = next((pair for pair in subtable.PairSet[index].PairValueRecord if pair.SecondGlyph == right), None)
+            if record is not None:
+                adjustment += getattr(record.Value1, "XAdvance", 0)
+                break
+    return adjustment
+
+
+def feature_lookups(font, tag):
+    table = font["GSUB"].table
+    feature = next(record.Feature for record in table.FeatureList.FeatureRecord if record.FeatureTag == tag)
+    return [table.LookupList.Lookup[index] for index in feature.LookupListIndex]
 
 
 def glyph_geometry(glyph):
@@ -246,3 +260,71 @@ class ExportFontsTest(unittest.TestCase):
                         self.assertEqual(glyph.numberOfContours, 3)
                         self.assertLessEqual(expected_tips, set(glyph.coordinates))
                         self.assertEqual(font["hmtx"].metrics["Z"], (font_units(width), 0))
+
+    def test_bold_keeps_94_approved_positions_and_excludes_all_10_rejections(self):
+        positions = ("startTop", "startBottom", "endTop", "endBottom")
+        rejected = {
+            "E.endBottom", "F.endBottom", "J.startBottom", "J.endBottom", "L.endTop",
+            "P.endBottom", "U.startBottom", "U.endBottom", "V.startBottom", "V.endBottom",
+        }
+        expected = {f"{letter}.{position}" for letter in ascii_uppercase for position in positions} - rejected
+        self.assertEqual(len(expected), 94)
+        for extension in ("ttf", "woff2"):
+            with self.subTest(extension=extension), TTFont(self.output / f"NOT4K-Bold.{extension}") as font:
+                alternate_names = {
+                    name for name in font.getGlyphOrder()
+                    if name.count(".") == 1 and name.rsplit(".", 1)[1] in positions
+                }
+                self.assertEqual(alternate_names, expected)
+                for name in expected:
+                    base = name.split(".")[0]
+                    self.assertEqual(font["hmtx"].metrics[name][0], font["hmtx"].metrics[base][0])
+                    self.assertEqual(font["hmtx"].metrics[name][1], font["glyf"][name].xMin)
+                for letter in ascii_uppercase:
+                    for start in positions[:2]:
+                        for end in positions[2:]:
+                            name = f"{letter}.{start}.{end}"
+                            self.assertEqual(name in font["glyf"], {
+                                f"{letter}.{start}", f"{letter}.{end}",
+                            } <= expected)
+        with TTFont(self.output / "NOT4K-Regular.woff2") as font:
+            self.assertFalse(expected.intersection(font.getGlyphOrder()))
+            self.assertEqual(
+                {record.FeatureTag for record in font["GSUB"].table.FeatureList.FeatureRecord},
+                {"calt", "tnum"},
+            )
+
+    def test_style_preferences_switch_approved_positions_and_keep_single_options(self):
+        with TTFont(self.output / "NOT4K-Bold.woff2") as font:
+            upper, lower = (
+                {
+                    source: target
+                    for lookup in feature_lookups(font, tag)
+                    for subtable in lookup.SubTable
+                    for source, target in subtable.mapping.items()
+                }
+                for tag in ("ss01", "ss02")
+            )
+            self.assertEqual(upper["C.startBottom.endBottom"], "C.startTop.endTop")
+            self.assertEqual(lower["C.startTop.endTop"], "C.startBottom.endBottom")
+            self.assertEqual(lower["E.startTop.endTop"], "E.startBottom.endTop")
+            self.assertNotIn("J.startTop.endTop", lower)
+            self.assertNotIn("L.endBottom", upper)
+            self.assertNotIn("C", upper)
+            self.assertNotIn("C", lower)
+            self.assertEqual([lookup.LookupType for lookup in feature_lookups(font, "calt")], [6, 6, 6])
+
+    def test_swashes_leave_room_at_spaces_and_punctuation_and_keep_letter_pair_kerning(self):
+        with TTFont(self.output / "NOT4K-Bold.woff2") as font:
+            outlines = font["glyf"]
+            start, end = "C.startTop", "C.endBottom"
+            left_extra = outlines["C"].xMin - outlines[start].xMin
+            right_extra = outlines[end].xMax - outlines["C"].xMax
+            self.assertGreater(left_extra, 0)
+            self.assertGreater(right_extra, 0)
+            self.assertEqual(pair_adjustment(font, "space", start), left_extra)
+            self.assertEqual(pair_adjustment(font, end, "space"), right_extra)
+            self.assertEqual(pair_adjustment(font, "parenleft", start), pair_adjustment(font, "parenleft", "C") + left_extra)
+            self.assertEqual(pair_adjustment(font, end, "period"), pair_adjustment(font, "C", "period") + right_extra)
+            self.assertEqual(pair_adjustment(font, start, "L"), pair_adjustment(font, "C", "L"))
+            self.assertEqual(pair_adjustment(font, "R.startTop", "A.endBottom.afterR"), pair_adjustment(font, "R", "A"))
