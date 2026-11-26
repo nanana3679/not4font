@@ -1,0 +1,21 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-bold-judgment-v47.json",
+  "said": {"by": "user", "said": "응 고친게낫다 다른 알파벳이랑 숫자도 ㄱㄱ", "meaning": "the G with the spur of 24; go on with the other capitals and the numerals"},
+  "set": "A to Z and 0 to 9 in the Bold; new in this round: B H J L Q U V W X Y Z and 0 1 2 3 5 6 7 8 9",
+  "decisions": {
+    "V": "the A built like the 4 turned upside down, no crossbar",
+    "W": "the M upside down (stencil)",
+    "X": "two diagonals 26 across, the one at the angle of the red in front, the other 6 apart",
+    "Q": "the O with a tail 24 across at 52 degrees through its lower right corner, the ring 6 apart from the tail",
+    "0": "92 wide, a short slash at the angle of the red inside, 6 from the ring (told from the O)",
+    "1": "the stem of the 4 with the top of its diagonal as a flag",
+    "9": "the 6 turned half round",
+    "horizontals": "26 in the O family and the T, 24 where they stack, on arms and in crossbars",
+    "newDiagonals": "26 across, as in the 4 and the A"
+  },
+  "open": ["diagonals are of two weights: 30 in N, K, M (W), R from the logo; 26 in the 4, A, V, X, Y, Z, 2, 7", "numerals are of different widths; numbers that keep changing (scores) may need numerals of one width"],
+  "files": "lab/image-galleries/menu-direction-20261122/logo/bold/v48-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/alphabet-v48.py; page build-now-v48.py; the previous page kept as past-20261126-judgment-3.html",
+  "asked": "point at any letter that looks wrong"
+}

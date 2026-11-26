@@ -1,0 +1,10 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-regular-v65.json",
+  "said": {"by": "user", "said": "겹치면 왼쪽이 이기고 이긴애 주변으로 잘라줘 R 다리 주변처럼 72 88", "meaning": "where letters overlap the left one wins and the right one is cut around it (one gap, as the leg of the R around its bowl); the R's bowl 72 in the Regular and 88 in the Bold (read as one width per weight)"},
+  "decided": {"rBowl": {"r16": 72, "bold": 88}, "rSpacing": "by its top (stem and bowl), the leg reaching into the next letter's room", "overlap": "left wins; the right letter is cut one gap around the overlapping pieces; slivers dropped; touching is not overlapping, so the arm of the 4 still joins"},
+  "seen": {"RE RN RR RB": "the next stem is cut round the leg", "RA": "the A's diagonal is cut round the leg, the leg passing in front as in the X; its foot comes away, so in the Bold the A may read as 4", "4K 4O 45": "unchanged, the arm joins"},
+  "files": "lab/image-galleries/menu-direction-20261122/logo/regular/v66-*.svg, v66-zoom-re-ra-rn.png",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/font-v69.py (set_line_cut); page build-now-v66.py; the previous page kept as past-20261126-r-leg.html",
+  "asked": "kern pairs like RA wider so that they do not overlap? (the U still open)"
+}

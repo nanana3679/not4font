@@ -1,0 +1,10 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-bold-v55.json",
+  "said": {"by": "user", "said": "로고 26도 괜찮긴했는데", "meaning": "the logo at 26 was fine too (read as going along with 26 for the font, and opening the red of the logo to 26)"},
+  "font": "every diagonal 26 across (N, K, M, W, R thinned from 30); the whole set, the judgment words and NOT4K in the font",
+  "logo": "edition 1 with its red diagonal at 26 beside the frozen one at 30; with the thinner red the stems of the N are cut less and stand a little longer; nothing else changes",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/bold/v56-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/alphabet-v56.py; page build-now-v56.py; the previous page kept as past-20261126-diagonals.html",
+  "asked": "the red diagonal of the logo at 26 too?"
+}

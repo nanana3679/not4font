@@ -1,0 +1,11 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-regular-v62.json",
+  "said": {"by": "user", "said": "R도 K랑 비슷하게 만들수있을거같은데", "meaning": "the R could be made like the K"},
+  "rLikeK": "the R takes the K's lower half: its bowl ends at 38 (where the K's arm leaves the stem); its leg is the K's leg (axis through (s + 24, 40), 52 degrees, d across) with its top flat one gap below the bowl; the R as wide as the K (80 in the Regular 16, 102 in the Bold)",
+  "view": "take it: in the Regular the R narrows to the K's width and the two read as a pair, the leg standing apart shared by both; in the Bold the change is small",
+  "stillOpen": "the U (recommended: square on the right, 40 on the left)",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/regular/v63-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/font-v65.py; page build-now-v63.py; the previous page kept as past-20261126-u.html",
+  "asked": "the R like the K?"
+}

@@ -1,0 +1,15 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-regular-v64.json",
+  "said": [
+    {"by": "user", "said": "그럼 위쪽 아래쪽 차지하는 너비가 다르잖아 근데 글자 측정은 위쪽 기준으로 해서 아래쪽이 다음 칸 영역은 침범하면 어때", "meaning": "space the R by its top; let the leg run into the next letter's room"},
+    {"by": "user", "said": "R 다리를 위쪽으로 좀더 늘려줘 움푹 파인부위없게", "meaning": "run the leg further up so that no dent is left"}
+  ],
+  "leg": "the leg runs on upwards along its own slope and is cut one gap from the stem and the bowl, so its top follows the bowl round its cut lower right corner and the wedge between them is filled (font-v68.py r_long_leg)",
+  "spacing": "the R's spacing body is its stem and bowl; the next letter stands the letter space from the bowl and the leg reaches under it: under T and O it tucks in cleanly; against a stem (E, N) its end joins the stem, as the arm of the 4 does; with the A, whose diagonal foot comes under the bowl, the leg crosses the A like an X — fonts have kerning, so such pairs only (R followed by A) are set wider",
+  "widths": {"r16": [84, 72, 88], "bold": [88, 78, 94], "note": "88 (Regular) and 94 (Bold) are the rule of the 4: the leg runs out beyond the bowl by just the letter space"},
+  "stillOpen": ["the R bowl width", "the U"],
+  "files": "lab/image-galleries/menu-direction-20261122/logo/regular/v65-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/font-v68.py (and font-v67.py); page build-now-v65.py; the previous page kept as past-20261126-r-narrow.html",
+  "asked": "the bowl width of the R (spacing by the top taken, with kerning for pairs that cross)"
+}

@@ -1,0 +1,15 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-regular-v60.json",
+  "said": [
+    {"by": "user", "said": "가운데 낮춤 별로야 다른 방법?", "meaning": "lowering the middles is rejected; other ways?"},
+    {"by": "user", "said": "지금 A처럼 그냥 자연스럽게 그렇게 되는게 좋아", "meaning": "asymmetry that comes about by itself from the build, as in the A built like the 4, is what is liked; not a rule laid on"}
+  ],
+  "natural": "letters asymmetric by their own build already: A, V, 4, 1, 7 (a diagonal and a stem), K and R (a leg apart), Q, X, Z (one stroke in front), J and G (open on one side); the K is one of them, not alone",
+  "yLikeA": "the upper half of the V on a stem: reads as a bent I, not as Y; not to use",
+  "rulesForReference": {"join": "a stroke meeting two others joins one and stands apart from the other (H, A, M, W, Y, middle of E and F)", "corners": "the two corners on the line of the red diagonal cut deep (40), the others shallow (12)", "lengths": "paired strokes of unequal length, the upper longer (E, F, L; the stems of T and Y left of the middle)"},
+  "view": "keep the letters as they are",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/regular/v61-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/font-v63.py (natural, Y) and font-v62.py (three rules); page build-now-v61.py; the previous page kept as past-20261126-low-middle.html",
+  "asked": "keep as is and move on (next: the V reading as a single diagonal when small)?"
+}

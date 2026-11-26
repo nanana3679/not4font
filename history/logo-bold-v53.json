@@ -1,0 +1,13 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-bold-v52.json",
+  "said": {"by": "user", "said": "40 n처럼 잘랐을때 조그만 조각 없애줘", "meaning": "the tail of the Q with its top at 40; the Z split like the N, without the small pieces"},
+  "changes": {
+    "Q": "tail top at 40 (foot on the baseline, 24 across, the ring 6 apart)",
+    "Z": "split like the N; the two small pieces the cut left at the corners of the bars beyond the diagonal (79 square units each) dropped; pieces under 200 square units are removed (the word rule on slivers, applied inside a letter)"
+  },
+  "choices": ["A built like the 4", "G with a spur of 24", "horizontals 24 where they stack", "B with counters straight on the left", "B and 8 with rings of one width (96)", "Q tail top 40", "Z split like the N"],
+  "open": ["diagonal weights 30 (N, K, M, W, R) and 26 (4, A, V, X, Y, Z, 2, 7)", "numerals of one width for scores"],
+  "files": "lab/image-galleries/menu-direction-20261122/logo/bold/v53-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/alphabet-v53.py; page build-now-v53.py; the previous page kept as past-20261126-qz.html"
+}

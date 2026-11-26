@@ -1,0 +1,13 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-regular-v69.json",
+  "said": [
+    {"by": "user", "said": "V랑도 비교하고싶어", "meaning": "compare the U shapes with the V as well"},
+    {"by": "user", "said": "근데 글자들 너비가 너무 좁아진 기분이 드는데?", "meaning": "the letters (of the Regular, narrowed to three quarters in round v68) feel too narrow"}
+  ],
+  "widthSteps": {"factors": [1.0, 0.95, 0.9, 0.85, 0.8, 0.75], "letters": "B C D E F G H J L O Q S T U, 0 2 3 5 6 8 9 (Regular 16 only)", "kept": "P and R at the chosen bowl 72; diagonal letters as before", "ends": "100 = the set before round v68, 75 = round v68 (checked equal)", "also": "the UI words at letters 14 px tall"},
+  "uv": {"shown": "each of the five U beside the V (a left diagonal and a right stem), and VOLUME VALUE CURVE, Regular at 75 percent and Bold", "seen": "1 differs most from the V; 2 and 4 (40) read as U in words but come nearer the V beside it; 3 and 5 (52) read as V (VOLUME as VOLVME); a wider Regular U makes the cut corners a smaller share of it"},
+  "files": "lab/image-galleries/menu-direction-20261122/logo/regular/v70-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/font-v74.py (U and V), font-v75.py (regular_at(factor)); page build-now-v70.py; the previous page kept as past-20261126-u-j.html",
+  "asked": "the Regular width step (the U and J numbers may come with it)"
+}

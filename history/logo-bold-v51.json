@@ -1,0 +1,9 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-bold-v50.json",
+  "said": {"by": "user", "said": "Q 선 약간만 짧게", "meaning": "the tail of the Q a little shorter"},
+  "q": "the tail keeps its foot on the baseline and its slope; its flat top at 52 (round v50), 46, 40 or 34",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/bold/v51-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/alphabet-v51.py; page build-now-v51.py; the previous page kept as past-20261126-bzq.html",
+  "asked": "which length for the tail of the Q (the Z still open)"
+}

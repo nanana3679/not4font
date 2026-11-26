@@ -1,0 +1,15 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-bold-judgment-v46.json",
+  "said": {"by": "user", "said": "G에서 C를 제외한부분이 굵은데 이걸 개성으로 봐야할지 솔직히 별차이없는듯 24로할게"},
+  "decided": {"horizontals": "24 (user)", "A": "built like the 4 (user, round v46)"},
+  "answer": "the heavy lower right of the G (52 wide against stems of 30) is not character: it was filled only to close a notch under the spur",
+  "g": {
+    "g-now": "round v45: the lower right of the counter filled from the lower bar up to 56",
+    "g-bar": "a spur 24 thick (38 to 62) inwards from the right side (22 long), a slit under it, the opening above 62 to 74 (recommended)",
+    "g-open": "no spur: the right side rises from the lower corner to 50, open above; closest to C"
+  },
+  "files": "lab/image-galleries/menu-direction-20261122/logo/bold/v47-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/judgment-v47.py; page build-now-v47.py; the previous page kept as past-20261126-judgment-2.html",
+  "asked": "which G"
+}

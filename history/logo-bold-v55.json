@@ -1,0 +1,11 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-bold-v54.json",
+  "said": {"by": "user", "said": "ㅇㅋ 아까말한 대각선 길이 다른건 잘모르겠음", "meaning": "the flat 6 and 9 taken; unsure about the two diagonal weights"},
+  "decided": {"sixNine": "flat stem side (user)"},
+  "shown": "N, K, M, W, R with diagonals 30 across (now) and 26, beside Z and X (26), in NETWORK, MARKET and the whole set; stems stay 30; the logo keeps its own red diagonal of 30",
+  "view": "the difference is small; unify the font at 26: one rule, and a slanted stroke measures wider along a horizontal, so 26 looks closer to the stems of 30",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/bold/v55-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/alphabet-v55.py (chosen() sets every choice so far); page build-now-v55.py; the previous page kept as past-20261126-six-nine.html",
+  "asked": "unify the diagonals of the font at 26?"
+}

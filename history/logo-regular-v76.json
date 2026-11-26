@@ -1,0 +1,11 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-regular-v75.json",
+  "said": {"by": "user", "said": "2", "meaning": "the V of number 2"},
+  "decided": {"v": "number 2: the 52 degree diagonal and an upright stem with the lower right corner cut at 52 degrees, the strokes meeting in a point; in both weights (as the U and J)"},
+  "state": "font-v81.decided(w): Regular 16 at 90 percent (P and R bowl 72), Bold (P and R bowl 88); U 2, J 4, G parted (upright gap, square foot), V 2; R spaced by its top, left wins, RA kerned 25 percent",
+  "shown": "the whole set in both weights, words, and the Regular at letters 14 px tall",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/regular/v76-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/font-v81.py (decided); page build-now-v76.py; board lists by board-history.py; the previous page kept as past-20261126-small-v.html",
+  "asked": "point at any letter to fix; if none, the font is gathered here and next is the logo finish"
+}

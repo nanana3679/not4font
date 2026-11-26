@@ -1,0 +1,10 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-regular-v63.json",
+  "said": {"by": "user", "said": "R윗부분 너비를 좁게 해달라는 말이야", "meaning": "\"like the K\" meant the R narrower at the top (round v63 read it otherwise)"},
+  "r": "the leg kept as it is (flat top, reaching the full width at the baseline); the bowl narrowed so that the leg runs out beyond it, as the K's leg runs out beyond its arm: Regular 16 bowl 84 or 72 (now 100), Bold 88 or 78 (now 100)",
+  "stillOpen": "the U",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/regular/v64-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/font-v66.py; page build-now-v64.py; the previous page kept as past-20261126-r-k.html",
+  "asked": "which bowl width"
+}

@@ -1,0 +1,12 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-bold-v56.json",
+  "said": {"by": "user", "said": "로고는 지금이나은듯 안굵은버전도", "meaning": "the logo keeps its red at 30 (edition 1 as frozen); and a version that is not bold"},
+  "decided": {"logoRed": "30, edition 1 as frozen (user); the finish item on the red weight is settled", "fontDiagonals": "26 (round v56)"},
+  "engine": "font-v57.py draws the whole set from one set of weights (stems s, stacking horizontals h, O family horizontals ho, diagonals d, stencil gaps g, letter space sp); corners stay cut 26 tall at 52 degrees; widths that hold the 52 degree angle follow from the stems (N = 78 + 1.4 s, M = 94 + 1.4 s, X, Y, Z, V = 78 + d across). With the Bold numbers (30, 24, 26, 26, 6, 6) it redraws round v56 exactly (checked letter by letter)",
+  "regular": {"r14": {"s": 14, "h": 12, "ho": 13, "d": 12, "g": 4, "sp": 12}, "r16": {"s": 16, "h": 14, "ho": 15, "d": 14, "g": 4, "sp": 12}, "r18": {"s": 18, "h": 16, "ho": 17, "d": 16, "g": 5, "sp": 12}},
+  "note": "the arm of the 4 runs on by the letter space (12 in the Regular), so in a Regular word it meets the next letter as in the Bold",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/regular/v57-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/font-v57.py; page build-now-v57.py; the previous page kept as past-20261126-diagonal-26.html",
+  "asked": "which Regular weight: 14, 16 or 18"
+}

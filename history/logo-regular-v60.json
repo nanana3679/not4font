@@ -1,0 +1,11 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-regular-v59.json",
+  "said": {"by": "user", "said": "난 비대칭인거 특색있어서 좋은데 반대로 다른 문자에 이걸 적용해보면?", "meaning": "keep the K asymmetric (distinctive); try carrying its asymmetry over to other letters"},
+  "decided": {"k": "stays asymmetric (user)"},
+  "low": "the Regular 16 with its middles at 38 (the height where the arm of the K leaves its stem) instead of 50: the middle bar of E, F, H; the spur of G; the meeting of the arms of Y (wider Y); the waist of S, B, 8, 3, 5, 6, 9, 2 (upper bowl larger, lower smaller, the lower bowl's corner cuts smaller since a cut cannot be taller than half its bowl); P, R, A, 4, M are low already; K unchanged",
+  "boldNote": "the Bold has heavier bars, so with the same rule its waist could only go down to about 44",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/regular/v60-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/font-v60.py; page build-now-v60.py; the previous page kept as past-20261126-k-asym.html",
+  "asked": "go with the low middles?"
+}

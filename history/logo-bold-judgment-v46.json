@@ -1,0 +1,26 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-bold-judgment-v45.json",
+  "said": {
+    "by": "user",
+    "said": "26인 경우, a를 4와 비슷하게 만든 경우 보여줘"
+  },
+  "readAs": "\"26인 경우\" read two ways, both drawn: the A with its top corners cut 26 tall like every other corner, and every horizontal 26 instead of 24",
+  "a": {
+    "a52": "round v45: vertical legs, top corners cut 52 tall at 52 degrees",
+    "a26": "top corners cut 26 tall like every other corner: reads more like a rounded door frame than an A",
+    "a4": "built like the 4: the outer edge of a diagonal leg (26 across) from (0, 0) at 52 degrees up to the top of a stem 30 on the right, joined there; crossbar 24 at 13 to 37 as in the 4; nearly the 4 with its diagonal brought down to the baseline"
+  },
+  "horizontals26": "E, F, S with bars 26 (counters 11 instead of 14), the lower bar of the bowls of P and R 26 (counters 14 instead of 16), the crossbar of the A 26 (22 to 48); GOOD is unchanged",
+  "fix": "judgment-v45.py now sets the arm of the 4 to the letter spacing in its own copy of base-v43 (the 4 there had kept the arm of 16; no judgment word holds a 4, so round v45 did not change)",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/bold/v46-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/judgment-v46.py; page build-now-v46.py; the previous page kept as past-20261126-judgment-1.html",
+  "asked": "which A, and horizontals 24 or 26",
+  "decided": {
+    "by": "user",
+    "said": "나는 4랑 비슷한 a가 맘에들어",
+    "choice": "the A built like the 4 (a4)",
+    "telling4FromA": "the 4 keeps its arm 6 past the stem and its diagonal stops at the crossbar; the A has no arm and its diagonal leg reaches the baseline"
+  },
+  "stillAsked": "horizontals 24 or 26"
+}

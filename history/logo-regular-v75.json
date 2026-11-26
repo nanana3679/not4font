@@ -1,0 +1,19 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-regular-v74.json",
+  "said": {"by": "user", "said": "직각이낫다", "meaning": "the ㄱ's foot square"},
+  "decided": {"g": "way b with the ㄱ's foot square (both weights); font-v79.decided(w) with square_foot=True is the whole font as decided"},
+  "next": "the V that reads as a backslash and an I when small (announced in round v71)",
+  "shown": {
+    "1": "now: the 52 degree diagonal and an upright stem on the right, meeting at a flat foot",
+    "2": "corner: 1 with the lower right corner cut at 52 degrees so that the strokes meet in a point",
+    "3": "pencil: upright arms above, both coming down at 52 degrees to a point in the middle",
+    "4": "steep: two straight arms to a point in the middle at about 65 degrees (not 52)",
+    "width": "as now: Regular 94, Bold 108"
+  },
+  "seen": ["1 and 2 still read as a backslash and an I when small", "3 and 4 read as V even at 10 px", "3 keeps the 52 degree diagonals and the upright stems; large it looks like a pencil's tip or a shield", "4 is the usual V but would be the only diagonal in the font not at 52 degrees", "only the Regular is set small, so the Bold could keep the present V"],
+  "recommended": "3",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/regular/v75-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/font-v80.py (v_corner, v_pencil, v_steep); page build-now-v75.py; board lists by board-history.py; the previous page kept as past-20261126-g-foot.html",
+  "asked": "the number of the V (and whether the Bold changes with it)"
+}

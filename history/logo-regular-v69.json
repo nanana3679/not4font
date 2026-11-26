@@ -1,0 +1,12 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-regular-v68.json",
+  "said": {"by": "user", "said": "25 / U J 모양 이어서 고를래", "meaning": "the RA pair at the 25 percent step; go on to choose the U and the J"},
+  "decided": {"raKerning": {"step": 0.25, "r16": 18.87, "bold": 14.3, "note": "only RA; RX left unkerned (not chosen)"}},
+  "shown": "the five U shapes of round v62 (1 both corners 26 as now; 2 right square, left 40; 3 right square, left 52; 4 left square, right 40; 5 left square, right 52) at the current widths (Regular 16 narrowed: U 75, J 66; Bold U 100, J 88), the J drawn from the U of the same number (upper left taken off above 40), numbered alike so that they can be chosen apart; words UNIT JUMP RUN and JUDGE MUSIC BONUS set as decided",
+  "seen": "3 and 5 (52) read as V in words, more so in the narrowed Regular; 2 and 4 (40) read as U",
+  "recommended": "2 for both (as in round v62)",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/regular/v69-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/font-v73.py (font() with the RA kerning); page build-now-v69.py; the previous page kept as past-20261126-ra.html",
+  "asked": "the numbers of the U and the J"
+}

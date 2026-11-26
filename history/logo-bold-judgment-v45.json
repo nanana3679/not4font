@@ -1,0 +1,24 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-base-v44.json",
+  "said": {"by": "user", "said": "판정문자", "meaning": "draw the letters of the judgment words first (before the numerals)"},
+  "words": ["PERFECT", "GREAT", "GOOD", "MISS"],
+  "letters": {
+    "P": "stem 30 and a bowl from 34 up: square on the left, rounded as the O on the right; lower bar 24, upper 26 (width 96)",
+    "E": "stem and three arms 24 thick (middle one 8 shorter), right ends cut at 52 degrees like the right end of the T (width 84)",
+    "R": "the bowl of the P (width 100) and a leg 30 across at 52 degrees under it, 6 below the bowl (stencil, as the leg of the K), reaching the baseline at the right",
+    "F": "the E without its lower arm (width 82)",
+    "C": "the O 96 wide, open on the right between y 26 and 74 (flat ends)",
+    "G": "the O 104 wide, open on the upper right between 56 and 74, the lower right of the counter filled up to 56 as a spur",
+    "A": "vertical legs 30, top corners cut 52 tall at 52 degrees (deeper than the usual 26) so that it reads as A and not as 4, top 26, crossbar 24 at 24 to 48, open at the bottom (width 112)",
+    "D": "stem on the left, rounded as the O on the right (width 100)",
+    "M": "two stems 30 and a V standing 6 apart from them, its arms 30 across on the axis of the diagonal of the N (width 136)",
+    "I": "a stem 30",
+    "S": "two rings stacked (y 38 to 100 and 0 to 62, bars 24), the upper open on the right, the lower open on the left (width 96)"
+  },
+  "notes": ["horizontals: 26 in O, C, G, D, T and the upper bar of a bowl; 24 in E, F, S, the lower bar of a bowl and the crossbar of the A", "counters of P, R, E, S are 14 to 16 tall: fine at the large sizes of judgment words, may fill in small"],
+  "setting": "the four words set with nothing but the gap of 6 (no script, no sweeps)",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/bold/",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/judgment-v45.py; page build-now-v45.py; the previous page kept as past-20261126-base-3.html",
+  "asked": "point at any letter that looks wrong; if none, go on to the numerals 0 to 9"
+}

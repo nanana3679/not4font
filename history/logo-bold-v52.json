@@ -1,0 +1,10 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-bold-v51.json",
+  "said": {"by": "user", "said": "Z는 n처럼 분할하는안도 보으줘", "meaning": "also a Z split like the N"},
+  "z-split": "the Z with square bar ends whose diagonal, corner to corner, stands 6 apart from the bars (stencil), as the diagonal of the N stands apart from its stems",
+  "page": "one screen with the Q tail lengths of round v51 and four Z: as in round v48, square ends, cut as the T (round v50), split like the N",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/bold/v51-*.svg, v52-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/alphabet-v52.py; page build-now-v52.py (the round v51 page was replaced before it was shown)",
+  "asked": "which length for the tail of the Q, and which Z"
+}

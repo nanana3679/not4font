@@ -1,0 +1,13 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-base-v43.json",
+  "said": {"by": "user", "said": "응근데 오른쪽 획 튀어나오는 길이를 자간만큼으로 하자", "meaning": "yes, the arm joins letters without a stem there too (like the O); and the arm runs on past the stem by exactly the letter spacing"},
+  "four": "the crossbar runs on 6 (the letter spacing) past the stem; spacing measured from the stem, so the end of the arm meets the place where the next letter begins",
+  "pairs": {"4K": "meets the stem of the K exactly and joins it, as in edition 1", "4O": "meets the upright left side of the O and joins it; below, where the corner of the O is cut, a small gap stays", "4T": "stands out by 6", "4 at the end": "stands out by 6"},
+  "unions": "closed by 0.01 so that edges that meet exactly become one shape",
+  "baseFormsSettled": "N (stencil), O, T, 4 (arm 6, spaced from the stem), K",
+  "judgmentWords": "the grades the game uses (src/game/judgment/JudgmentCore.ts): perfect, great, good, goodTrill, miss",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/base/base44-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/base-v44.py; page build-now-v44.py; the previous page kept as past-20261126-base-2.html",
+  "asked": "next: the letters of the judgment words (PERFECT, GREAT, GOOD, MISS) first, or the numerals 0 to 9? (recommended: the judgment words)"
+}

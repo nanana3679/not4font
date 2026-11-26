@@ -1,0 +1,15 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-regular-v70.json",
+  "said": {"by": "user", "said": "90 u2 j4", "meaning": "the Regular's boxy letters at 90 percent; the U of number 2 and the J of number 4"},
+  "decided": {
+    "regularWidth": {"factor": 0.9, "letters": "B C D E F G H J L O Q S T U, 0 2 3 5 6 8 9", "examples": {"O": 94, "E": 76, "U": 90, "J": 79}},
+    "u": "number 2: lower right square, lower left cut 40 (both weights)",
+    "j": "number 4: lower left square (the hook), lower right cut 40 (the stem side) (both weights)"
+  },
+  "state": "Regular 16 at 90 percent with P and R bowl 72; Bold with P and R bowl 88; U2 and J4 in both; R spaced by its top, left wins, RA kerned 25 percent (Regular 18.87, Bold 14.3)",
+  "shown": "the whole set A to Z and 0 to 9 in both weights, words, and the Regular at letters 14 px tall",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/regular/v71-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/font-v76.py (decided(w): the whole font as decided so far); page build-now-v71.py; the previous page kept as past-20261126-width-steps.html",
+  "asked": "point at any awkward letter; if none, next the V that reads as one diagonal when small (LEVEL, VOLUME)"
+}

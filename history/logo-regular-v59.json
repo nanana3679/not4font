@@ -1,0 +1,15 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-regular-v58.json",
+  "said": {"by": "user", "said": "16으로 해도 되는데 K 만 비대칭이 돋보이네", "meaning": "the Regular at 16; only the K stands out for its asymmetry"},
+  "decided": {"regular": "16 (s 16, h 14, ho 15, d 14, g 4, sp 12)"},
+  "k": {
+    "now": "the arm leaves the stem at 38, long; the leg short",
+    "sym": "arm leaving the stem at 50, the leg the arm turned over that line, apart by the stencil gap; at 52 degrees the K becomes narrow (55 in the Regular)",
+    "chevron": "the arm and the leg as one chevron pointed at the middle, apart from the stem by the stencil gap as the diagonal of the N; about as wide as now (77 in the Regular)"
+  },
+  "view": "the chevron: arm and leg of one length, apart from the stem as in the N; the Bold K came from the logo and could stay",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/regular/v59-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/font-v59.py; page build-now-v59.py; the previous page kept as past-20261126-regular-2.html",
+  "asked": "if the K becomes the chevron: the Regular only, or the Bold too?"
+}

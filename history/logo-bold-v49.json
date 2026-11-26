@@ -1,0 +1,10 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-bold-v48.json",
+  "said": {"by": "user", "said": "B 8 위아래 폭 같게", "meaning": "the B and the 8 as wide at the top as at the bottom"},
+  "change": "both rings of the B and of the 8 are 96 wide (the upper ones were 88)",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/bold/v49-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/alphabet-v49.py; page build-now-v49.py; the previous page kept as past-20261126-bold-set-1.html",
+  "stillOpen": ["diagonal weights 30 and 26", "numerals of one width for scores"],
+  "asked": "any other letter that looks wrong; if none, the two open points"
+}

@@ -1,0 +1,11 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-regular-v73.json",
+  "said": {"by": "user", "said": "B로하고 ㄱ 아래부분사선으로 안깎고 직각으로해봐", "meaning": "the G is way b; try the foot of the ㄱ square instead of cut at 52 degrees"},
+  "decided": {"g": "way b: the C and the ㄱ parted by an upright gap, the ㄱ's stem down to the baseline, the C's bottom arm stopping one gap before it (both weights)"},
+  "tried": "the ㄱ's foot square (the stem a plain rectangle from the baseline to the jaw) beside the foot cut as the ring's lower right corner",
+  "seen": ["with the square foot the ㄱ stands as a plain ㄱ and parts from the C more clearly", "the G's bottom is then cut on the left and square on the right, the same build as the U of number 2"],
+  "files": "lab/image-galleries/menu-direction-20261122/logo/regular/v74-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/font-v79.py (g_parted, decided(w, square_foot)); page build-now-v74.py; board lists by board-history.py; the previous page kept as past-20261126-g-split.html",
+  "asked": "the ㄱ's foot square or cut"
+}

@@ -1,0 +1,19 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-regular-v72.json",
+  "said": [
+    {"by": "user", "said": "직관적이진않네 그럼 c 와 ㄱ 획을 분리만 해볼까", "meaning": "the G made from the C and the Q's tail is not intuitive; instead only part the present G into its C and its ㄱ"},
+    {"by": "user", "said": "Lab 목록도 정리점해줘", "meaning": "tidy the list as well (read as the list of earlier work on the board; the board's back link names it 'Lab 목록' and on the preview server it leads back to the board)"}
+  ],
+  "dropped": "the G = C + the Q's tail (round v72)",
+  "drawn": {
+    "parts": "C = top arm, left side, bottom arm (the ring without its right part between the arms); ㄱ = the jaw and the right side below it; parted by one stencil gap where they meet at the lower right corner",
+    "a": "across: the C keeps its whole bottom arm; the ㄱ's stem stops one gap above it (Bold leaves only 6 of stem below the jaw)",
+    "b": "upright: the ㄱ's stem runs down to the baseline with the corner; the bottom arm stops one gap before it",
+    "c": "slanted: one even gap on a falling 52 degree line through the meeting of the arm's top and the stem's inner edge; the ㄱ's foot ends in a point like the R's leg"
+  },
+  "board": "the history in #relogo, one long sentence with 66 links, became four numbered lists by stage (logo image generation 14, logo drawing and edition 1 22, Bold 14, Regular 16) with short notes of what was decided; drawn by tools/board-history.py from board-history.json; style in style.css (.history)",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/regular/v73-*.svg; index.html #relogo; style.css",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/font-v78.py (split), build-now-v73.py, board-history.py; the previous page kept as past-20261126-g-from-c.html",
+  "asked": "the G: the present one, a, b or c"
+}

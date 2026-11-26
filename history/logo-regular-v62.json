@@ -1,0 +1,11 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-regular-v61.json",
+  "said": {"by": "user", "said": "U 한쪽만 직각으로 하고 꺾이는쪽을 키우면 어떰?", "meaning": "the U with one lower corner square and the other cut larger"},
+  "versions": {"now": "both lower corners 26", "r-square-40": "right square, left 40", "r-square-52": "right square, left 52", "l-square-40": "left square, right 40", "l-square-52": "left square, right 52"},
+  "j": "the J is the lower part of the U (left side cut at 40), so it follows",
+  "view": "right square, left 40: the right side upright like a stem and the left slanting, so the U joins the V, A and 4 (a diagonal and a stem); the J gets its cut on the hook side and a straight stem; at 52 the U comes too near the V; square on the left makes the hook of the J angular",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/regular/v62-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/font-v64.py; page build-now-v62.py; the previous page kept as past-20261126-natural.html",
+  "asked": "which U"
+}

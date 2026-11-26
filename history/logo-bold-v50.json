@@ -1,0 +1,20 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-bold-v49.json",
+  "said": [
+    {"by": "user", "said": "B 구멍 왼쪽 < 말고 직선으로할 z는 모양이 이상함"},
+    {"by": "user", "said": "Q의 마지막 선은 R처럼 상단이평평하게"}
+  ],
+  "changes": {
+    "B": "both bowls square on the left (the side of the stem) and rounded on the right, 96 wide: the counters are straight on the left, pointed on the right, as in the D and the P",
+    "Q": "the tail as a band with flat ends like the leg of the R: top level at 52 inside the counter, foot on the baseline, 24 across, the ring 6 apart from it"
+  },
+  "z": {
+    "z-now": "round v48: both bar ends cut parallel to the diagonal, so the whole letter is a parallelogram (read as the odd part)",
+    "z-square": "square bar ends",
+    "z-t": "bar ends cut as the T and the E cut theirs (the top edge longer)"
+  },
+  "files": "lab/image-galleries/menu-direction-20261122/logo/bold/v50-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/alphabet-v50.py; page build-now-v50.py; the previous page kept as past-20261126-b8.html",
+  "asked": "which Z"
+}

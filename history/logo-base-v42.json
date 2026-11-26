@@ -1,0 +1,21 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-edition1.json",
+  "said": [
+    {"by": "user", "said": "ㅇㅋ", "meaning": "where letters overlap, the left one stands in front and the right one is cut 6 from its outline"},
+    {"by": "user", "said": "지금 형태를 BOLD로 하고 이걸로는 메뉴 이름이나 판정 문장등 굵직해도 괜찮은 곳에 쓰고 가능하면 일반도 만들면 나머지 UI에도 쓸수있을듯", "meaning": "the present weight is the Bold, for menu names, judgment words and other places where heavy type is fine; a Regular, if possible, for the rest of the UI"},
+    {"by": "user", "said": "일반 UI에는 스크립트나 꾸밈 삐침 같은건 필요없겠고", "meaning": "general UI text needs neither the word script nor the decorative sweeps"}
+  ],
+  "baseForms": {
+    "N": "stems 30; the diagonal 30 across on the axis (21, 100) to (99, 0), held to the cap height; stencil, standing 6 apart from the stems as the leg of the K does (other version: joined)",
+    "O": "the O of edition 1 uncut: 104 wide, sides 30, top and bottom 26, corners cut 26 tall at the angle of the red",
+    "T": "crossbar 26 thick, 97 wide on top, both ends cut at the angle of the red (top wider); stem 30 in the middle",
+    "4": "the 4 of edition 1 with its crossbar ending flush with the stem (other version: running on 16 past it)",
+    "K": "the capital K of edition 1 without the sweep of its leg"
+  },
+  "word": "NOT4K set from the base forms with only the gap of 6 at the closest point: the T falls over the shoulder of the O and the 4 under the crossbar of the T by themselves (two of the joins of edition 1); the 4 and the K stand 28 further right than in edition 1, because the stem of the base T is in the middle",
+  "weightNote": "stems at 30 percent of the cap height are closer to a Black than to an ordinary Bold",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/base/",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/base-v42.py; page build-now-v42.py; the previous page kept as past-20261126-edition1.html",
+  "asked": "keep these base forms? (N and 4 have other versions beside them)"
+}

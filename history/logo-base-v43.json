@@ -1,0 +1,12 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-base-v42.json",
+  "said": {"by": "user", "said": "4의 오른쪽은 남기는데 충돌판정을 위한 측정은 기둥 기준으로해서 지금처럼 오른쪽글자와붙게", "meaning": "the 4 keeps the arm of its crossbar past the stem; spacing is measured from the stem, so that the arm joins the letter on its right as in edition 1"},
+  "four": "the crossbar runs on 16 past the stem; the spacing body is the 4 without the arm (the flush 4), so the next letter stands 6 from the stem and the arm reaches 10 into it: where that letter has ink, the arm joins it (both ink); where not, it stands out",
+  "pairs": {"4K": "joins the stem of the K, as in edition 1", "4O": "joins the lower left of the O", "4T": "does not reach the stem of the T; stands out under the crossbar of the T", "4 at the end": "stands out"},
+  "word": "NOT4K from the base forms with the gap of 6 now shows three joins of edition 1 by itself (T over the shoulder of the O, the 4 under the crossbar of the T, the crossbar of the 4 into the stem of the K)",
+  "nKept": "the N stays stencil (nothing said against it)",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/base/base43-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/base-v43.py; page build-now-v43.py; the previous page kept as past-20261126-base-1.html",
+  "asked": "should the arm also join letters that have no stem there, like the O?"
+}

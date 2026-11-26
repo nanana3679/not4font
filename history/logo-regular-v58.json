@@ -1,0 +1,11 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-regular-v57.json",
+  "said": {"by": "user", "said": "14랑 16중 고민", "meaning": "torn between the Regular at 14 and at 16"},
+  "shown": "the Regular at stems 14, 15 and 16 in interface words (PLAY, SONG SELECT, RANKING, SETTINGS, PROFILE, HIGH SCORE 9876, NOTE SPEED 85, LEVEL 12), drawn by the browser at cap heights of 40, 20 and 12 pixels",
+  "view": "14 looks light and sharp large; general UI is mostly small, where thin strokes fade first, so 16 is recommended; 15 between",
+  "noticed": "in LEVEL the V built like the 4 (a diagonal joined to a stem) reads small almost as a lone diagonal; worth a look later",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/regular/v58-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/font-v58.py; page build-now-v58.py; the previous page kept as past-20261126-regular-1.html",
+  "asked": "14, 15 or 16"
+}

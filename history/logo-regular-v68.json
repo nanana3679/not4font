@@ -1,0 +1,11 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-regular-v67.json",
+  "said": {"by": "user", "said": "볼드아닌일반 O E같은거만 커보여서 너비를 P 줄인것처럼 맞춰야겠다 / ra조합만 따로 띄우겠다는 뜻이면 한번해봐", "meaning": "in the Regular only letters like O and E look large; narrow them as the P was narrowed; and try setting the RA pair apart on its own"},
+  "narrowed": {"weight": "Regular 16 only", "factor": 0.75, "why": "the P went from 96 to 72", "letters": "B C D E F G H J L O Q S T U and 0 2 3 5 6 8 9 (their widths were taken over from the Bold); ratios among them kept", "kept": "A K M N V W X Y Z (width from the 52 degree angle), I (stem), 1 4 7 (the 7 at 72 would put its diagonal foot outside the left end of its top bar)"},
+  "raKerning": {"steps": [0, 0.25, 0.5, 0.75, 1], "full": {"r16": 75.48, "bold": 57.19}, "note": "full = the A stands the letter space from the whole R; the R's leg and the A's diagonal open into a V, so at full the top gap is as wide as a word space; at 0.75 only the lower left corner of the A's foot is cut and the A reads as A; below that it reads as 4"},
+  "otherPairs": "in the top-spaced setting the leg also cuts RX (the X loses the foot of its lower left arm), and slightly R4 R2 RJ RZ R3 RW R7 RT, which still read as their letters; the stem letters (RE RN ...) are cut round the leg as decided in round v66",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/regular/v68-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/font-v71.py (regular_set, narrowing), font-v72.py (set_line_kerned, RA steps, overlap list); page build-now-v68.py; the previous page kept as past-20261126-p-like-r.html",
+  "asked": "which RA step (and the same for RX); the U still open"
+}

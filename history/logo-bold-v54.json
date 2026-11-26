@@ -1,0 +1,14 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-bold-v53.json",
+  "said": [
+    {"by": "user", "said": "숫자 너비 달라도 ㄱㅊ 6 9가기둥평평한게 나으려나", "meaning": "numerals may keep their own widths (no numerals of one width); would the 6 and 9 be better with a flat stem?"},
+    {"by": "user", "said": "동그라미로부터 곡선시작되는지점 움푹파여있는거 말하는거야 69", "meaning": "the notch where the curve leaves the bowl, in the 6 and the 9"}
+  ],
+  "decided": {"numeralWidths": "they stay as they are (user)"},
+  "sixNine": "the stem side runs straight from the lower cut corner to the upper one (the notch where the cut corners of the two stacked rings met is filled), the counters square on that side; the outer corners at the top and the bottom stay cut; the 9 is the 6 turned half round",
+  "view": "flat is better: the stem reads as one stroke, and it matches the B",
+  "files": "lab/image-galleries/menu-direction-20261122/logo/bold/v54-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/alphabet-v54.py; page build-now-v54.py; the previous page kept as past-20261126-bold-set-2.html",
+  "asked": "the 6 and 9 flat? then the diagonal weights (30 and 26)"
+}

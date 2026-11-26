@@ -1,0 +1,15 @@
+{
+  "createdAt": "2026-11-26",
+  "from": "logo-regular-v71.json",
+  "said": {"by": "user", "said": "C에 q 획 더해서 G를 만들어보면 어떨까?", "meaning": "make the G from the C with the stroke (tail) of the Q added"},
+  "drawn": "G = C + the Q's tail exactly (flat top at 40, foot from 20.6 inside the right edge, h thick, 52 degrees); the C cut one gap round the tail, slivers dropped; so O closed, C open, Q = O + tail, G = C + tail",
+  "widths": {"cWidth": {"r16": 86, "bold": 96}, "gWidth": {"r16": 94, "bold": 104}},
+  "seen": [
+    "the tail is what marks the Q, so the new G can read as Q in words (LOGIN as LOQIN); it differs from the Q only by the open upper right",
+    "GA opens into a V as RA did (the tail and the A's diagonal), so G and A stand wide apart",
+    "at the C's width the G is narrower than the O and looks firmer; at the G's width its open side is wide"
+  ],
+  "files": "lab/image-galleries/menu-direction-20261122/logo/regular/v72-*.svg",
+  "drawnBy": "~/not4k-prototypes/menu-direction-20261122/logo-gen-20261125/tools/font-v77.py (g_from_c, tail_of); page build-now-v72.py; the previous page kept as past-20261126-decided-set.html",
+  "asked": "the G: the present one, new at the C's width, or new at the G's width"
+}
