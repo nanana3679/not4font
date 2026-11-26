@@ -11,7 +11,7 @@ from shapely.geometry import Polygon
 from shapely.ops import unary_union
 
 from export_fonts import FONT_CHARACTERS, GLYPH_NAMES, HERE, UNITS_PER_DESIGN_UNIT, WEIGHTS, font_units, main
-from not4k_font.glyphs import CHARACTERS, build_glyphs
+from not4k_font.glyphs import CHARACTERS, build_glyphs, draw_z
 from not4k_font.spacing import compose_line, edition_kerning, least_shift, ra_clearance
 from not4k_font.symbols import SYMBOLS
 
@@ -135,13 +135,14 @@ class ExportFontsTest(unittest.TestCase):
                 for adjacent in substitutions.values():
                     self.assertEqual(pair_adjustment(font, tabular, adjacent), 0)
 
-    def test_calt_builds_the_edition_1_overlap_pairs_and_keeps_their_advances(self):
+    def test_calt_builds_the_overlap_pairs_and_keeps_their_advances(self):
         overlaps_by_style = {
             "Regular": "abdefhijklmnprwxz2347",
             "Bold": "abdefhijklmnprwxz247",
         }
         for style, weight, _ in WEIGHTS:
             glyphs, bodies = build_glyphs(weight)
+            glyphs["z"] = bodies["z"] = draw_z(weight, angled_ends=True)
             kerns = edition_kerning(glyphs, bodies, weight.letter_space)
             with self.subTest(style=style), TTFont(self.output / f"NOT4K-{style}.woff2") as font:
                 gsub = font["GSUB"].table
@@ -226,3 +227,22 @@ class ExportFontsTest(unittest.TestCase):
                             self.assertGreater(shift, glyf[left].xMax + gap)
                         else:
                             self.assertEqual(shift, glyf[left].xMax + gap)
+
+    def test_z_has_52_degree_outer_tips_and_three_stencil_pieces_in_both_formats(self):
+        for style, weight, _ in WEIGHTS:
+            width = 78 + weight.diagonal_across
+            height = weight.stacked_horizontal
+            bevel = 0.78 * height
+            expected_tips = {
+                (0, font_units(100)),
+                (font_units(bevel), font_units(100 - height)),
+                (font_units(width), 0),
+                (font_units(width - bevel), font_units(height)),
+            }
+            for extension in ("ttf", "woff2"):
+                with self.subTest(style=style, extension=extension):
+                    with TTFont(self.output / f"NOT4K-{style}.{extension}") as font:
+                        glyph = font["glyf"]["Z"]
+                        self.assertEqual(glyph.numberOfContours, 3)
+                        self.assertLessEqual(expected_tips, set(glyph.coordinates))
+                        self.assertEqual(font["hmtx"].metrics["Z"], (font_units(width), 0))

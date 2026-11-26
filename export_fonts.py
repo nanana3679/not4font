@@ -17,7 +17,7 @@ from shapely.affinity import translate
 from shapely.geometry.polygon import orient
 
 from not4k_font.geometry import pieces_of
-from not4k_font.glyphs import BOLD, CHARACTERS, REGULAR, build_glyphs
+from not4k_font.glyphs import BOLD, CHARACTERS, REGULAR, build_glyphs, draw_z
 from not4k_font.spacing import clear_ink, cut_overlaps, edition_kerning, least_shift
 from not4k_font.symbols import SYMBOLS, TAIL_OVERHANGS, build_symbols
 
@@ -176,6 +176,7 @@ def pair_shifts_for(glyphs, bodies, letter_space, extra_kerning):
 
 def build_font(edition, style, weight, weight_class):
     glyphs, bodies = build_glyphs(weight)
+    glyphs["z"] = bodies["z"] = draw_z(weight, angled_ends=True)
     letter_space = weight.letter_space
     extra_kerning = edition_kerning(glyphs, bodies, letter_space)
     symbol_outlines, symbol_bodies = build_symbols(weight)
