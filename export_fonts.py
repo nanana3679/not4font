@@ -2,9 +2,10 @@
 
 import argparse
 import json
+from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
-from string import ascii_uppercase
+from string import ascii_uppercase, digits
 
 from fontTools.agl import UV2AGL
 from fontTools.feaLib.builder import addOpenTypeFeaturesFromString
@@ -40,7 +41,7 @@ def draw_glyph(shape):
     return pen.glyph()
 
 
-def add_kerning(font, bodies, letter_space, extra_kerning, metrics):
+def kerning_feature(bodies, letter_space, extra_kerning, metrics):
     rules = []
     for left, left_name in GLYPH_NAMES.items():
         advance, _ = metrics[left_name]
@@ -50,13 +51,32 @@ def add_kerning(font, bodies, letter_space, extra_kerning, metrics):
             adjustment = font_units(shift) - advance
             if adjustment:
                 rules.append(f"  pos {left_name} {right_name} {adjustment};")
-    feature = "\n".join(["feature kern {", *rules, "} kern;"])
-    addOpenTypeFeaturesFromString(font, feature)
+    return "\n".join(["feature kern {", *rules, "} kern;"])
+
+
+def add_tabular_digits(outlines, metrics, letter_space):
+    bounds = {
+        GLYPH_NAMES[digit]: outlines[GLYPH_NAMES[digit]].coordinates.calcIntBounds()
+        for digit in digits
+    }
+    # Keep the widest outline inside the cell, including the crossbar of 4.
+    advance = max(right - left for left, _, right, _ in bounds.values()) + font_units(letter_space)
+    rules = []
+    for name, (left, _, right, _) in bounds.items():
+        tabular_name = f"{name}.tnum"
+        side_bearing = (advance - (right - left)) // 2
+        tabular_glyph = deepcopy(outlines[name])
+        tabular_glyph.coordinates.translate((side_bearing - left, 0))
+        outlines[tabular_name] = tabular_glyph
+        metrics[tabular_name] = (advance, side_bearing)
+        rules.append(f"  sub {name} by {tabular_name};")
+    return "\n".join(["feature tnum {", *rules, "} tnum;"])
 
 
 def build_font(edition, style, weight, weight_class):
     glyphs, bodies, extra_kerning = V81.decided(weight)
     weight_record = edition["weights"][style.lower()]
+    letter_space = weight_record["numbers"]["letterSpace"]
     space_advance = font_units(edition["rules"]["space"])
 
     outlines = {name: TTGlyphPen(None).glyph() for name in (".notdef", "space")}
@@ -65,6 +85,7 @@ def build_font(edition, style, weight, weight_class):
         left, _, right, _ = weight_record["glyphs"][char.upper()]["spacingBody"]
         outlines[name] = draw_glyph(glyphs[char])
         metrics[name] = (font_units(right - left), font_units(glyphs[char].bounds[0]))
+    tabular = add_tabular_digits(outlines, metrics, letter_space)
 
     cmap = {ord(char): GLYPH_NAMES[char.lower()] for char in CHARS + ascii_uppercase}
     cmap[ord(" ")] = "space"
@@ -102,7 +123,8 @@ def build_font(edition, style, weight, weight_class):
         sxHeight=font_units(100),
     )
     builder.setupPost()
-    add_kerning(builder.font, bodies, weight_record["numbers"]["letterSpace"], extra_kerning, metrics)
+    kern = kerning_feature(bodies, letter_space, extra_kerning, metrics)
+    addOpenTypeFeaturesFromString(builder.font, f"{kern}\n{tabular}")
     return builder.font
 
 

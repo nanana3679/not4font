@@ -1,6 +1,7 @@
 import json
 import unittest
 from pathlib import Path
+from string import digits
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
@@ -72,3 +73,44 @@ class ExportFontsTest(unittest.TestCase):
                         advance, _ = font["hmtx"].metrics["R"]
                         actual = advance + pair_adjustment(font, "R", GLYPH_NAMES[right])
                         self.assertEqual(actual, font_units(expected))
+
+    def test_tnum_centers_all_digits_at_the_widest_outline_plus_letter_space(self):
+        for style, weight, _ in WEIGHTS:
+            for extension in ("ttf", "woff2"):
+                with self.subTest(style=style, extension=extension):
+                    with TTFont(self.output / f"NOT4K-{style}.{extension}") as font:
+                        self.check_tabular_digits(font, weight.sp)
+
+    def check_tabular_digits(self, font, letter_space):
+        self.assertIn("GSUB", font)
+        gsub = font["GSUB"].table
+        feature = next(record.Feature for record in gsub.FeatureList.FeatureRecord if record.FeatureTag == "tnum")
+        substitutions = {
+            source: target
+            for index in feature.LookupListIndex
+            for subtable in gsub.LookupList.Lookup[index].SubTable
+            for source, target in subtable.mapping.items()
+        }
+        cmap = font.getBestCmap()
+        base_digits = {cmap[ord(digit)] for digit in digits}
+        self.assertEqual(set(substitutions), base_digits)
+
+        glyphs = font["glyf"]
+        metrics = font["hmtx"].metrics
+        widest = max(glyphs[name].xMax - glyphs[name].xMin for name in base_digits)
+        expected_advance = widest + font_units(letter_space)
+        self.assertGreater(len({metrics[name][0] for name in base_digits}), 1)
+
+        for base, tabular in substitutions.items():
+            with self.subTest(glyph=base):
+                self.assertNotIn(tabular, base_digits)
+                advance, left = metrics[tabular]
+                base_glyph, tabular_glyph = glyphs[base], glyphs[tabular]
+                right = advance - tabular_glyph.xMax
+                self.assertEqual(advance, expected_advance)
+                self.assertEqual(left, tabular_glyph.xMin)
+                self.assertLessEqual(abs(left - right), 1)
+                shift = tabular_glyph.xMin - base_glyph.xMin
+                self.assertEqual(list(tabular_glyph.coordinates), [(x + shift, y) for x, y in base_glyph.coordinates])
+                for adjacent in substitutions.values():
+                    self.assertEqual(pair_adjustment(font, tabular, adjacent), 0)
