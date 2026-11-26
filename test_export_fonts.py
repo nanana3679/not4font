@@ -6,8 +6,11 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from fontTools.ttLib import TTFont
+from shapely.affinity import translate
+from shapely.geometry import Polygon
+from shapely.ops import unary_union
 
-from export_fonts import CHARS, GLYPH_NAMES, HERE, V72, V81, WEIGHTS, font_units, main
+from export_fonts import CHARS, GLYPH_NAMES, HERE, UNITS_PER_DESIGN_UNIT, V72, V81, WEIGHTS, font_units, main
 
 
 def pair_adjustment(font, left, right):
@@ -20,6 +23,20 @@ def pair_adjustment(font, left, right):
                 if record.SecondGlyph == right:
                     return record.Value1.XAdvance
     return 0
+
+
+def glyph_geometry(glyph):
+    shells, holes = [], []
+    start = 0
+    for end in glyph.endPtsOfContours:
+        contour = Polygon([
+            (x / UNITS_PER_DESIGN_UNIT, y / UNITS_PER_DESIGN_UNIT)
+            for x, y in glyph.coordinates[start:end + 1]
+        ])
+        parts = holes if contour.exterior.is_ccw else shells
+        parts.append(contour.buffer(0))
+        start = end + 1
+    return unary_union(shells).difference(unary_union(holes))
 
 
 class ExportFontsTest(unittest.TestCase):
@@ -114,3 +131,43 @@ class ExportFontsTest(unittest.TestCase):
                 self.assertEqual(list(tabular_glyph.coordinates), [(x + shift, y) for x, y in base_glyph.coordinates])
                 for adjacent in substitutions.values():
                     self.assertEqual(pair_adjustment(font, tabular, adjacent), 0)
+
+    def test_calt_builds_the_edition_1_overlap_pairs_and_keeps_their_advances(self):
+        overlaps_by_style = {
+            "Regular": "abdefhijklmnprwxz2347",
+            "Bold": "abdefhijklmnprwxz247",
+        }
+        for style, weight, _ in WEIGHTS:
+            glyphs, bodies, kerns = V81.decided(weight)
+            with self.subTest(style=style), TTFont(self.output / f"NOT4K-{style}.woff2") as font:
+                gsub = font["GSUB"].table
+                features = {record.FeatureTag: record.Feature for record in gsub.FeatureList.FeatureRecord}
+                self.assertLess(max(features["tnum"].LookupListIndex), min(features["calt"].LookupListIndex))
+                self.assertEqual(gsub.LookupList.Lookup[features["calt"].LookupListIndex[0]].LookupType, 6)
+
+                outlines = font["glyf"]
+                metrics = font["hmtx"].metrics
+                alternates = {char for char, name in GLYPH_NAMES.items() if f"{name}.afterR" in outlines}
+                self.assertEqual(alternates, set(overlaps_by_style[style]))
+                for right in sorted(alternates):
+                    with self.subTest(pair=f"R{right.upper()}"):
+                        name = GLYPH_NAMES[right]
+                        alternate = f"{name}.afterR"
+                        self.assertEqual(metrics[alternate], (metrics[name][0], outlines[alternate].xMin))
+                        self.assertEqual(pair_adjustment(font, "R", alternate), pair_adjustment(font, "R", name))
+
+                        shift = V72.least_shift(bodies["r"], bodies[right], weight.sp) + kerns.get(("r", right), 0)
+                        original_pair = V72.set_line_kerned(f"r{right}", glyphs, bodies, weight, kerns)
+                        expected = translate(original_pair.difference(glyphs["r"]), xoff=-shift)
+                        deviation = glyph_geometry(outlines[alternate]).symmetric_difference(expected).area
+                        self.assertLess(deviation, expected.length / UNITS_PER_DESIGN_UNIT)
+
+    def test_clipped_r_keeps_kerning_and_clipped_tabular_two_keeps_its_width(self):
+        for style, _, _ in WEIGHTS:
+            with self.subTest(style=style), TTFont(self.output / f"NOT4K-{style}.woff2") as font:
+                self.assertEqual(pair_adjustment(font, "R.afterR", "R.afterR"), pair_adjustment(font, "R", "R"))
+                self.assertEqual(pair_adjustment(font, "R.afterR", "A.afterR"), pair_adjustment(font, "R", "A"))
+                self.assertEqual(pair_adjustment(font, "E.afterR", "A"), pair_adjustment(font, "E", "A"))
+                metrics = font["hmtx"].metrics
+                self.assertEqual(metrics["two.tnum.afterR"][0], metrics["two.tnum"][0])
+                self.assertEqual(pair_adjustment(font, "R", "two.tnum.afterR"), 0)

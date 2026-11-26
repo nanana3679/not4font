@@ -25,10 +25,11 @@
     fill-opacity: 0.55;
     white-space: pre;
   }
-  .digit-samples { margin: 0 0 2rem; border-collapse: collapse; }
-  .digit-samples th, .digit-samples td { padding-inline: 0.5rem 1.5rem; text-align: start; }
-  .digit-samples td { font: 2rem / 1.35 NOT4K; font-kerning: normal; }
+  table { margin: 0 0 2rem; border-collapse: collapse; }
+  th, td { padding-inline: 0.5rem 1.5rem; text-align: start; }
+  td { font: 2rem / 1.35 NOT4K; font-kerning: normal; }
   .digit-samples .tabular { font-variant-numeric: tabular-nums; }
+  .uncut { font-feature-settings: "calt" 0; }
   #bold :is(text, td) { font-weight: 700; }
 </style>
 <h1>NOT4K 1판 글꼴 비교</h1>
@@ -52,6 +53,18 @@
       <tr><td>1111</td><td class="tabular">1111</td></tr>
       <tr><td>4444</td><td class="tabular">4444</td></tr>
       <tr><td>9027</td><td class="tabular">9027</td></tr>
+    </tbody>
+  </table>
+  <table class="overlap-samples">
+    <thead>
+      <tr><th scope="col">원래 윤곽</th><th scope="col">겹침 잘라내기</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="uncut">RE</td><td>RE</td></tr>
+      <tr><td class="uncut">RN</td><td>RN</td></tr>
+      <tr><td class="uncut">RA</td><td>RA</td></tr>
+      <tr><td class="uncut">RX</td><td>RX</td></tr>
+      <tr><td class="uncut">RRE</td><td>RRE</td></tr>
     </tbody>
   </table>
 </template>
