@@ -5,12 +5,14 @@
 ## 지금 상태
 
 - 1판(2026-11-26): 모양을 정했다. `ed1/`에 글자마다 SVG가 있다.
-- 글꼴 파일(WOFF2)은 아직 없다. 남은 일은 이 저장소의 이슈에 있다.
+- Regular와 Bold의 시험용 TTF와 WOFF2를 만들 수 있다. 겹치는 글자 사이의 자르기는 별도 이슈에서 다룬다.
 
 ## 폴더
 
 - `rounds/`: 디자인 세션에서 회차마다 쓴 스크립트다. 앞 회차 파일을 이름으로 불러 쓰는 사슬이라 같은 폴더에 둔다. `font-v81.py`의 `decided(w)`가 지금 글꼴 전체다.
 - `export_ed1.py`: 1판을 `ed1/`로 내보낸다.
+- `export_fonts.py`: 1판의 두 굵기를 TTF와 WOFF2로 내보낸다.
+- `specimen.html`: 브라우저에서 WOFF2와 1판 SVG 견본을 겹쳐 본다.
 - `ed1/`: 1판 글자 SVG(`regular/`, `bold/`), 견본(`specimen-*.svg`), 굵기 숫자와 간격 규칙(`font-ed1.json`).
 - `history/`: 회차마다 정한 것과 그 이유다. 게임 저장소 디자인 보드의 기록에서 옮겨 왔다.
 
@@ -20,7 +22,12 @@
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 .venv/bin/python export_ed1.py
+.venv/bin/python export_fonts.py
+.venv/bin/python -m unittest
 ```
+
+글꼴 파일은 `out/fonts/`에 생성된다. `.venv/bin/python -m http.server 8000`을 실행한 뒤 [견본 비교 페이지](http://localhost:8000/specimen.html)를 연다.
+CSS에서 이 판의 글꼴을 사용할 때는 `font-kerning: normal`을 지정한다.
 
 ## 정한 것
 
