@@ -1,6 +1,6 @@
-# NOT4K 글꼴
+# NOT4FONT
 
-리듬 게임 NOT4K의 UI 글꼴이다. 로고 1판의 굵기에서 나온 Bold와 일반 UI에 쓰는 Regular, 두 굵기가 있다. 글자는 대문자 A～Z와 숫자 0～9다.
+NOT4FONT는 리듬 게임 NOT4K의 UI 글꼴이다. 로고 1판의 굵기에서 나온 Bold와 일반 UI에 쓰는 Regular, 두 굵기가 있다. 글자는 대문자 A～Z와 숫자 0～9다.
 
 ## 지금 상태
 
@@ -29,8 +29,8 @@ python3 -m venv .venv
 .venv/bin/python -m unittest
 ```
 
-글꼴 파일은 `out/fonts/`에 생성된다. `.venv/bin/python -m http.server 8000`을 실행한 뒤 [견본 비교 페이지](http://localhost:8000/specimen.html)를 연다.
-CSS에서 이 판의 글꼴을 사용할 때는 `font-kerning: normal`을 지정한다.
+글꼴 파일은 `out/fonts/`에 `NOT4FONT-Regular`, `NOT4FONT-Bold`(TTF, WOFF2)로 생성된다. `.venv/bin/python -m http.server 8000`을 실행한 뒤 [견본 비교 페이지](http://localhost:8000/specimen.html)를 연다.
+CSS에서 이 판의 글꼴을 사용할 때는 `font-family: NOT4FONT`와 `font-kerning: normal`을 지정한다.
 Bold에서 위쪽 삐침을 우선하려면 `font-feature-settings: "ss01" 1`을, 아래쪽을 우선하려면 `font-feature-settings: "ss02" 1`을 지정한다. 한 위치만 허용된 글자는 그 위치를 쓴다.
 숫자 자리를 맞추려면 `font-variant-numeric: tabular-nums`를 지정한다. 가장 넓은 숫자의 윤곽에 글자 사이 간격을 더해 공통 너비를 정하고 각 숫자의 윤곽을 가운데에 둔다.
 

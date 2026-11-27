@@ -71,7 +71,7 @@ class ExportFontsTest(unittest.TestCase):
         for style, _, weight_class in WEIGHTS:
             for extension in ("ttf", "woff2"):
                 with self.subTest(style=style, extension=extension):
-                    with TTFont(self.output / f"NOT4K-{style}.{extension}") as font:
+                    with TTFont(self.output / f"NOT4FONT-{style}.{extension}") as font:
                         cmap = font.getBestCmap()
                         self.assertEqual({chr(codepoint) for codepoint in cmap}, expected_chars)
                         self.assertEqual(font["OS/2"].usWeightClass, weight_class)
@@ -82,9 +82,26 @@ class ExportFontsTest(unittest.TestCase):
                             self.assertEqual(glyph, cmap[ord(char.upper())])
                             self.assertGreater(font["glyf"][glyph].numberOfContours, 0)
 
+    def test_files_and_name_table_use_the_not4font_family(self):
+        self.assertEqual(
+            sorted(path.name for path in self.output.iterdir()),
+            ["NOT4FONT-Bold.ttf", "NOT4FONT-Bold.woff2", "NOT4FONT-Regular.ttf", "NOT4FONT-Regular.woff2"],
+        )
+        for style, _, _ in WEIGHTS:
+            for extension in ("ttf", "woff2"):
+                with self.subTest(style=style, extension=extension):
+                    with TTFont(self.output / f"NOT4FONT-{style}.{extension}") as font:
+                        names = font["name"]
+                        self.assertEqual(names.getDebugName(1), "NOT4FONT")
+                        self.assertEqual(names.getDebugName(2), style)
+                        self.assertEqual(names.getDebugName(3), f"NOT4FONT-{style};1.000")
+                        self.assertEqual(names.getDebugName(4), f"NOT4FONT {style}")
+                        self.assertEqual(names.getDebugName(6), f"NOT4FONT-{style}")
+                        self.assertFalse(any("NOT4K" in record.toUnicode() for record in names.names))
+
     def test_r_and_four_keep_ink_outside_the_spacing_body(self):
         for style, _, _ in WEIGHTS:
-            with TTFont(self.output / f"NOT4K-{style}.woff2") as font:
+            with TTFont(self.output / f"NOT4FONT-{style}.woff2") as font:
                 glyphs = self.edition["weights"][style.lower()]["glyphs"]
                 for char in ("r", "4"):
                     with self.subTest(style=style, char=char):
@@ -100,7 +117,7 @@ class ExportFontsTest(unittest.TestCase):
             glyphs, bodies = build_glyphs(weight)
             extra_ra = ra_clearance(glyphs, bodies, weight.letter_space) * 0.25
             self.assertGreater(extra_ra, 0)
-            with TTFont(self.output / f"NOT4K-{style}.woff2") as font:
+            with TTFont(self.output / f"NOT4FONT-{style}.woff2") as font:
                 for right, extra in (("a", extra_ra), ("x", 0)):
                     with self.subTest(style=style, pair=f"R{right.upper()}"):
                         expected = least_shift(bodies["r"], bodies[right], weight.letter_space) + extra
@@ -112,7 +129,7 @@ class ExportFontsTest(unittest.TestCase):
         for style, weight, _ in WEIGHTS:
             for extension in ("ttf", "woff2"):
                 with self.subTest(style=style, extension=extension):
-                    with TTFont(self.output / f"NOT4K-{style}.{extension}") as font:
+                    with TTFont(self.output / f"NOT4FONT-{style}.{extension}") as font:
                         self.check_tabular_digits(font, weight.letter_space)
 
     def check_tabular_digits(self, font, letter_space):
@@ -158,7 +175,7 @@ class ExportFontsTest(unittest.TestCase):
             glyphs, bodies = build_glyphs(weight)
             glyphs["z"] = bodies["z"] = draw_z(weight, angled_ends=True)
             kerns = edition_kerning(glyphs, bodies, weight.letter_space)
-            with self.subTest(style=style), TTFont(self.output / f"NOT4K-{style}.woff2") as font:
+            with self.subTest(style=style), TTFont(self.output / f"NOT4FONT-{style}.woff2") as font:
                 gsub = font["GSUB"].table
                 features = {record.FeatureTag: record.Feature for record in gsub.FeatureList.FeatureRecord}
                 self.assertLess(max(features["tnum"].LookupListIndex), min(features["calt"].LookupListIndex))
@@ -183,7 +200,7 @@ class ExportFontsTest(unittest.TestCase):
 
     def test_clipped_r_keeps_kerning_and_clipped_tabular_two_keeps_its_width(self):
         for style, _, _ in WEIGHTS:
-            with self.subTest(style=style), TTFont(self.output / f"NOT4K-{style}.woff2") as font:
+            with self.subTest(style=style), TTFont(self.output / f"NOT4FONT-{style}.woff2") as font:
                 self.assertEqual(pair_adjustment(font, "R.afterR", "R.afterR"), pair_adjustment(font, "R", "R"))
                 self.assertEqual(pair_adjustment(font, "R.afterR", "A.afterR"), pair_adjustment(font, "R", "A"))
                 self.assertEqual(pair_adjustment(font, "E.afterR", "A"), pair_adjustment(font, "E", "A"))
@@ -196,7 +213,7 @@ class ExportFontsTest(unittest.TestCase):
         for style, weight, _ in WEIGHTS:
             for extension in ("ttf", "woff2"):
                 with self.subTest(style=style, extension=extension):
-                    with TTFont(self.output / f"NOT4K-{style}.{extension}") as font:
+                    with TTFont(self.output / f"NOT4FONT-{style}.{extension}") as font:
                         cmap = font.getBestCmap()
                         glyphs = font["glyf"]
                         metrics = font["hmtx"].metrics
@@ -211,7 +228,7 @@ class ExportFontsTest(unittest.TestCase):
 
     def test_symbol_pairs_keep_the_letter_space_between_inks_and_comma_heads_at_the_letter_space(self):
         for style, weight, _ in WEIGHTS:
-            with TTFont(self.output / f"NOT4K-{style}.ttf") as font:
+            with TTFont(self.output / f"NOT4FONT-{style}.ttf") as font:
                 cmap = font.getBestCmap()
                 glyf = font["glyf"]
                 metrics = font["hmtx"].metrics
@@ -259,7 +276,7 @@ class ExportFontsTest(unittest.TestCase):
             }
             for extension in ("ttf", "woff2"):
                 with self.subTest(style=style, extension=extension):
-                    with TTFont(self.output / f"NOT4K-{style}.{extension}") as font:
+                    with TTFont(self.output / f"NOT4FONT-{style}.{extension}") as font:
                         glyph = font["glyf"]["Z"]
                         self.assertEqual(glyph.numberOfContours, 3)
                         self.assertLessEqual(expected_tips, set(glyph.coordinates))
@@ -274,7 +291,7 @@ class ExportFontsTest(unittest.TestCase):
         expected = {f"{letter}.{position}" for letter in ascii_uppercase for position in positions} - rejected
         self.assertEqual(len(expected), 94)
         for extension in ("ttf", "woff2"):
-            with self.subTest(extension=extension), TTFont(self.output / f"NOT4K-Bold.{extension}") as font:
+            with self.subTest(extension=extension), TTFont(self.output / f"NOT4FONT-Bold.{extension}") as font:
                 alternate_names = {
                     name for name in font.getGlyphOrder()
                     if name.count(".") == 1 and name.rsplit(".", 1)[1] in positions
@@ -291,7 +308,7 @@ class ExportFontsTest(unittest.TestCase):
                             self.assertEqual(name in font["glyf"], {
                                 f"{letter}.{start}", f"{letter}.{end}",
                             } <= expected)
-        with TTFont(self.output / "NOT4K-Regular.woff2") as font:
+        with TTFont(self.output / "NOT4FONT-Regular.woff2") as font:
             self.assertFalse(expected.intersection(font.getGlyphOrder()))
             self.assertEqual(
                 {record.FeatureTag for record in font["GSUB"].table.FeatureList.FeatureRecord},
@@ -299,7 +316,7 @@ class ExportFontsTest(unittest.TestCase):
             )
 
     def test_style_preferences_switch_approved_positions_and_keep_single_options(self):
-        with TTFont(self.output / "NOT4K-Bold.woff2") as font:
+        with TTFont(self.output / "NOT4FONT-Bold.woff2") as font:
             upper, lower = (
                 {
                     source: target
@@ -319,7 +336,7 @@ class ExportFontsTest(unittest.TestCase):
             self.assertEqual([lookup.LookupType for lookup in feature_lookups(font, "calt")], [6, 6, 6])
 
     def test_swashes_leave_room_at_spaces_and_punctuation_and_keep_letter_pair_kerning(self):
-        with TTFont(self.output / "NOT4K-Bold.woff2") as font:
+        with TTFont(self.output / "NOT4FONT-Bold.woff2") as font:
             outlines = font["glyf"]
             start, end = "C.startTop", "C.endBottom"
             left_extra = outlines["C"].xMin - outlines[start].xMin
