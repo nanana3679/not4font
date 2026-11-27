@@ -8,7 +8,7 @@ from shapely.ops import unary_union
 
 from .geometry import DIAGONAL_COS, DIAGONAL_RUN, DIAGONAL_SIN, pieces_of, polygon, rectangle
 from .glyphs import BOLD, REGULAR, draw_three, draw_two
-from .spacing import cut_overlaps
+from .spacing import cut_overlaps, symbol_pair_shift
 
 TAIL_DEPTH = 12
 TAIL_RUN = TAIL_DEPTH * DIAGONAL_RUN
@@ -259,7 +259,7 @@ def hollow_trill_diamond(weight):
     return diamond.difference(diamond.buffer(-stroke, join_style="mitre"))
 
 
-SYMBOLS = ".,:;-/%+()'\"!?#&×·—=←→↑↓[]\\`*◇◆"
+SYMBOLS = ".…,:;-/%+()'\"!?#&×·—=←→↑↓[]\\`*◇◆"
 
 # Comma tails hang outside the spacing body, on the (left, right), so spacing is measured from the heads.
 TAIL_OVERHANGS = {",": (TAIL_RUN, 0), ";": (TAIL_RUN, 0), "'": (TAIL_RUN, 0), '"': (TAIL_RUN, 0), "`": (0, TAIL_RUN)}
@@ -268,6 +268,7 @@ TAIL_OVERHANGS = {",": (TAIL_RUN, 0), ";": (TAIL_RUN, 0), "'": (TAIL_RUN, 0), '"
 def build_symbols(weight):
     """Return the outlines and the bodies used to measure symbol spacing."""
     point = dot(weight)
+    period_step = symbol_pair_shift(point, point, point, point, weight.letter_space)
     apostrophe = quote(weight)
     paren = parenthesis(weight)
     square = bracket(weight)
@@ -276,6 +277,7 @@ def build_symbols(weight):
     up = vertical_arrow(weight)
     shapes = {
         ".": point,
+        "…": unary_union([translate(point, xoff=index * period_step) for index in range(3)]),
         ",": comma(weight),
         ":": colon(weight, point),
         ";": colon(weight, comma(weight)),
