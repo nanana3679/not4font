@@ -72,13 +72,12 @@ body {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
-a { color: inherit; text-underline-offset: 0.2em; }
 code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.9em; }
 :focus-visible { outline: 2px solid var(--base); outline-offset: 2px; }
 
 .wrap { max-width: 1040px; margin: 0 auto; padding: 0 16px; }
 
-header { padding: 48px 0 28px; }
+header.wrap { padding-top: 40px; padding-bottom: 28px; }
 .mark {
   margin: 0;
   font-family: "NOT4K", var(--ui);
@@ -87,8 +86,7 @@ header { padding: 48px 0 28px; }
   line-height: 1;
   font-kerning: normal;
 }
-.lede { margin: 16px 0 0; max-width: 36em; }
-.facts { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+.facts { margin: 14px 0 0; color: var(--muted); font-size: 13px; }
 
 .controls {
   display: flex;
@@ -132,6 +130,7 @@ header { padding: 48px 0 28px; }
 .swatch.cap { border-color: var(--cap); }
 .swatch.base { border-color: var(--base); }
 
+main.wrap { padding-bottom: 56px; }
 main section { padding: 40px 0 8px; }
 h2 { margin: 0 0 16px; font-size: 13px; font-weight: 600; color: var(--muted); }
 h3 { margin: 28px 0 10px; font-size: 13px; font-weight: 500; color: var(--muted); }
@@ -208,15 +207,11 @@ body[data-weight="both"] .grid { grid-template-columns: repeat(auto-fill, minmax
 .glyphs { display: flex; gap: 14px; }
 .g { display: block; font-size: 44px; padding: 0 0.06em; }
 .code { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
-
-footer { padding: 48px 16px 40px; color: var(--muted); font-size: 13px; }
-footer p { margin: 0; }
 </style>
 </head>
 <body data-weight="both">
 <header class="wrap">
   <h1 class="mark" lang="en">NOT4K</h1>
-  <p class="lede">리듬 게임 NOT4K의 UI 글꼴입니다. Regular와 Bold 두 굵기를 여기서 바로 써 볼 수 있습니다.</p>
   <p class="facts">대문자 26자 · 숫자 10자 · 기호 32자 · 시험판</p>
 </header>
 
@@ -251,8 +246,7 @@ footer p { margin: 0; }
 <main class="wrap">
   <section aria-labelledby="h-try">
     <h2 id="h-try">직접 써 보기</h2>
-    <textarea id="text" aria-label="써 볼 글자" rows="2" spellcheck="false" autocomplete="off" autocapitalize="characters" aria-describedby="text-note">NOT4K — READY? 3, 2, 1… GO!</textarea>
-    <p class="note" id="text-note">한글은 이 글꼴에 없어서 기기의 기본 글꼴로 보입니다. 소문자는 대문자 모양으로 나옵니다. 커닝(<code>kern</code>)과 문맥 대체(<code>calt</code>)는 기본으로 켜져 있습니다.</p>
+    <textarea id="text" aria-label="써 볼 글자" rows="2" spellcheck="false" autocomplete="off" autocapitalize="characters">NOT4K — READY? 3, 2, 1… GO!</textarea>
     <p class="note missing" id="missing" hidden></p>
     <div class="rows" lang="en">
       <div class="row"><span class="tag">REGULAR</span><div class="spec r" id="pv-r"></div></div>
@@ -276,10 +270,6 @@ footer p { margin: 0; }
   </section>
   <noscript><p class="note">견본과 설정은 JavaScript를 켜야 보입니다.</p></noscript>
 </main>
-
-<footer class="wrap">
-  <p>글꼴 파일은 <a href="https://github.com/nanana3679/not4k-font/commit/bb583309377dd180c82c21950e6dd3b03fe6d97a"><code>bb58330</code></a> 커밋에서 2026-11-27에 만들었습니다. · <a href="https://github.com/nanana3679/not4k-font">nanana3679/not4k-font</a></p>
-</footer>
 
 <script>
 (() => {
