@@ -22,7 +22,7 @@ from shapely.ops import unary_union
 from not4k_font.geometry import pieces_of
 from not4k_font.glyphs import BOLD, CHARACTERS, REGULAR, build_glyphs, draw_z
 from not4k_font.spacing import clear_ink, cut_overlaps, edition_kerning, least_shift, symbol_pair_shift
-from not4k_font.symbols import SYMBOLS, TAIL_OVERHANGS, build_symbols
+from not4k_font.symbols import QUOTES, SYMBOLS, TAIL_OVERHANGS, build_symbols, opening_quote
 from not4k_font.word_ends import allowed_positions, preferred_position, word_end_variant
 
 
@@ -34,6 +34,7 @@ GLYPH_NAMES = {
     char: UV2AGL.get(ord(char.upper()), f"uni{ord(char.upper()):04X}")
     for char in FONT_CHARACTERS
 }
+OPENING_QUOTE_NAMES = {char: f"{GLYPH_NAMES[char]}.open" for char in QUOTES}
 WEIGHTS = (("Regular", REGULAR, 400), ("Bold", BOLD, 700))
 FAMILY = "NOT4FONT"
 
@@ -62,7 +63,8 @@ def glyph_class(names):
 
 
 def kerning_feature(
-    pair_shifts, metrics, clipped_names, tabular_adjustments, word_forms, outlines, glyphs, letter_space
+    pair_shifts, metrics, clipped_names, tabular_adjustments, word_forms, outlines, glyphs, letter_space,
+    opening_quote_rules,
 ):
     forms = {name: [name] for name in GLYPH_NAMES.values()}
     for char, variants in word_forms.items():
@@ -78,7 +80,7 @@ def kerning_feature(
         for (left, right), shift in pair_shifts.items()
     }
     adjustments.update(tabular_adjustments)
-    rules = []
+    rules = list(opening_quote_rules)
     for (left_name, right_name), adjustment in adjustments.items():
         if adjustment:
             left_forms, right_forms = forms[left_name], forms[right_name]
@@ -222,6 +224,29 @@ def tabular_mark_kerning(glyphs, tabular_names, metrics, letter_space):
     return adjustments
 
 
+def opening_quote_kerning(opening_quotes, glyphs, bodies, word_forms, tabular, metrics, letter_space):
+    rules = []
+    for char, (quote, quote_body) in opening_quotes.items():
+        name = OPENING_QUOTE_NAMES[char]
+        advance = metrics[name][0]
+        shifts = {}
+        for right in CHARACTERS:
+            base = glyphs[right]
+            shift = symbol_pair_shift(quote, base, quote_body, bodies[right], letter_space)
+            shifts[GLYPH_NAMES[right]] = shift
+            for variant, shape in word_forms.get(right, {}).values():
+                overhang = max(base.bounds[0] - shape.bounds[0], 0)
+                shifts[variant] = clear_ink(quote, shape, shift + overhang, letter_space)
+        for variant, shape in tabular.items():
+            shifts[variant] = clear_ink(quote, shape, advance / UNITS_PER_DESIGN_UNIT, letter_space)
+        rules.extend(
+            f"  pos {name} {right} {font_units(shift) - advance};"
+            for right, shift in shifts.items()
+            if font_units(shift) != advance
+        )
+    return rules
+
+
 def add_clipped_glyphs(glyphs, pair_shifts, weight, tabular_names, word_forms, outlines, metrics):
     r_name = GLYPH_NAMES["r"]
     r_pieces = pieces_of(glyphs["r"])
@@ -292,8 +317,18 @@ def word_end_lookups(glyphs, word_forms, tabular_names):
 
 
 def substitution_features(glyphs, tabular_names, clipped_names, word_forms):
-    # Run tnum, word endings and their style preferences before cutting after R.
+    # Match quote context before word-end swashes and clipping change the neighbouring glyphs.
     lines = [f"feature tnum {{ sub {glyph_class(tabular_names)} by {glyph_class(tabular_names.values())}; }} tnum;"]
+    quotes = glyph_class(GLYPH_NAMES[char] for char in QUOTES)
+    opening_quotes = glyph_class(OPENING_QUOTE_NAMES.values())
+    word = glyph_class([*(GLYPH_NAMES[char] for char in CHARACTERS), *tabular_names.values()])
+    nonspace = glyph_class([".notdef", *GLYPH_NAMES.values(), *tabular_names.values()])
+    lines.extend([
+        "lookup OpeningQuotes {",
+        f"  ignore sub {nonspace} {quotes}' {word};",
+        f"  sub {quotes}' {word} by {opening_quotes};",
+        "} OpeningQuotes;",
+    ])
     r = GLYPH_NAMES["r"]
     r_context = [r, clipped_names[r]]
     if word_forms:
@@ -305,12 +340,12 @@ def substitution_features(glyphs, tabular_names, clipped_names, word_forms):
     )
     if word_forms:
         lines.extend([
-            "feature calt { lookup WordStarts; lookup WordEnds; lookup AfterR; } calt;",
+            "feature calt { lookup OpeningQuotes; lookup WordStarts; lookup WordEnds; lookup AfterR; } calt;",
             "feature ss01 { featureNames { name \"Upper word-end swashes\"; }; lookup PreferUpper; } ss01;",
             "feature ss02 { featureNames { name \"Lower word-end swashes\"; }; lookup PreferLower; } ss02;",
         ])
     else:
-        lines.append("feature calt { lookup AfterR; } calt;")
+        lines.append("feature calt { lookup OpeningQuotes; lookup AfterR; } calt;")
     return "\n".join(lines)
 
 
@@ -351,6 +386,11 @@ def build_font(edition, style, weight, weight_class):
             left, _, right, _ = weight_record["glyphs"][char.upper()]["spacingBody"]
         outlines[name] = draw_glyph(glyphs[char])
         metrics[name] = (font_units(right - left), font_units(glyphs[char].bounds[0]))
+    opening_quotes = {char: opening_quote(glyphs[char], bodies[char]) for char in QUOTES}
+    for char, (shape, _) in opening_quotes.items():
+        name = OPENING_QUOTE_NAMES[char]
+        outlines[name] = draw_glyph(shape)
+        metrics[name] = (metrics[GLYPH_NAMES[char]][0], font_units(shape.bounds[0]))
     tabular_names = add_tabular_digits(outlines, metrics, letter_space)
     word_forms = add_word_end_glyphs(glyphs, outlines, metrics) if bold else {}
     pair_shifts = pair_shifts_for(glyphs, bodies, letter_space, extra_kerning)
@@ -391,8 +431,12 @@ def build_font(edition, style, weight, weight_class):
         sxHeight=font_units(100),
     )
     builder.setupPost()
+    opening_quote_rules = opening_quote_kerning(
+        opening_quotes, glyphs, bodies, word_forms, tabular_outlines(glyphs, tabular_names, metrics), metrics, letter_space
+    )
     kern = kerning_feature(
-        pair_shifts, metrics, clipped_names, tabular_adjustments, word_forms, outlines, glyphs, letter_space
+        pair_shifts, metrics, clipped_names, tabular_adjustments, word_forms, outlines, glyphs, letter_space,
+        opening_quote_rules,
     )
     substitutions = substitution_features(glyphs, tabular_names, clipped_names, word_forms)
     addOpenTypeFeaturesFromString(builder.font, f"{kern}\n{substitutions}")
