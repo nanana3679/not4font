@@ -60,7 +60,9 @@ def glyph_class(names):
     return "[" + " ".join(names) + "]"
 
 
-def kerning_feature(pair_shifts, metrics, clipped_names, tabular_adjustments, word_forms, outlines):
+def kerning_feature(
+    pair_shifts, metrics, clipped_names, tabular_adjustments, word_forms, outlines, glyphs, letter_space
+):
     forms = {name: [name] for name in GLYPH_NAMES.values()}
     for char, variants in word_forms.items():
         forms[GLYPH_NAMES[char]].extend(name for name, _ in variants.values())
@@ -85,31 +87,58 @@ def kerning_feature(pair_shifts, metrics, clipped_names, tabular_adjustments, wo
                 rules.append(f"  pos {left_class} {right_class} {adjustment};")
             else:
                 rules.extend(f"  pos {left} {right} {adjustment};" for left, right in product(left_forms, right_forms))
-    boundary = swash_boundary_kerning(word_forms, clipped_names, forms, outlines)
+    boundary = swash_boundary_kerning(word_forms, clipped_names, forms, outlines, glyphs, pair_shifts, letter_space)
     return "\n".join(["feature kern {", *rules, *boundary, "} kern;"])
 
 
-def swash_boundary_kerning(word_forms, clipped_names, forms, outlines):
+def swash_boundary_kerning(word_forms, clipped_names, forms, outlines, glyphs, pair_shifts, letter_space):
+    """Give word-end swashes room next to spaces and marks.
+
+    Every separator moves by the swash's overhang beyond the base outline. A mark whose ink would still
+    come closer than the letter space, such as a comma tail under a low swash, gets a pair rule that
+    moves it until the inks clear. Pair rules come before class rules in the lookup, so they win.
+    """
     if not word_forms:
         return []
     before = defaultdict(list)
     after = defaultdict(list)
+    exceptions = []
     for char, variants in word_forms.items():
         base = outlines[GLYPH_NAMES[char]]
-        for (start, end), (name, _) in variants.items():
+        for (start, end), (name, shape) in variants.items():
             alternates = [name, clipped_names[name]] if name in clipped_names else [name]
             outline = outlines[name]
-            if start and outline.xMin < base.xMin:
-                before[base.xMin - outline.xMin].extend(alternates)
-            if end and outline.xMax > base.xMax:
-                after[outline.xMax - base.xMax].extend(alternates)
+            for side, active, overhang, groups in (
+                (-1, start, base.xMin - outline.xMin, before),
+                (1, end, outline.xMax - base.xMax, after),
+            ):
+                if not active:
+                    continue
+                overhang = max(overhang, 0)
+                if overhang:
+                    groups[overhang].extend(alternates)
+                for mark in SYMBOLS:
+                    pair = (char, mark) if side == 1 else (mark, char)
+                    shift = pair_shifts[pair] + overhang / UNITS_PER_DESIGN_UNIT
+                    amount = overhang + tail_clearance(shape, glyphs[mark], side, shift, letter_space)
+                    if amount > overhang:
+                        marks = forms[GLYPH_NAMES[mark]]
+                        pairs = product(alternates, marks) if side == 1 else product(marks, alternates)
+                        exceptions.extend(f"  pos {left} {right} {amount};" for left, right in pairs)
     separators = glyph_class(["space", *(form for char in SYMBOLS for form in forms[GLYPH_NAMES[char]])])
     return [
         "lookup SwashClearance {",
+        *exceptions,
         *(f"  pos {separators} {glyph_class(names)} {amount};" for amount, names in before.items()),
         *(f"  pos {glyph_class(names)} {separators} {amount};" for amount, names in after.items()),
         "} SwashClearance;",
     ]
+
+
+def tail_clearance(swash, mark, side, shift, letter_space):
+    """Return the font units a mark needs beyond `shift` so its ink stays the letter space from a swash."""
+    left, right = (swash, mark) if side == 1 else (mark, swash)
+    return font_units(clear_ink(left, right, shift, letter_space) - shift)
 
 
 def add_word_end_glyphs(glyphs, outlines, metrics):
@@ -364,7 +393,9 @@ def build_font(edition, style, weight, weight_class):
         sxHeight=font_units(100),
     )
     builder.setupPost()
-    kern = kerning_feature(pair_shifts, metrics, clipped_names, tabular_adjustments, word_forms, outlines)
+    kern = kerning_feature(
+        pair_shifts, metrics, clipped_names, tabular_adjustments, word_forms, outlines, glyphs, letter_space
+    )
     substitutions = substitution_features(glyphs, tabular_names, clipped_names, word_forms)
     addOpenTypeFeaturesFromString(builder.font, f"{kern}\n{substitutions}")
     return builder.font

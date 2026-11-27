@@ -219,11 +219,15 @@ class ExportFontsTest(unittest.TestCase):
                 symbols = {cmap[ord(char)] for char in SYMBOLS}
                 # Tabular digits take no kerning except to move comma tails apart.
                 tabular = [f"{GLYPH_NAMES[digit]}.tnum" for digit in digits]
+                # Word-end swashes, in every form calt, ss01, ss02 and the R context choose, border marks too.
+                swashes = [name for name in font.getGlyphOrder() if ".start" in name or ".end" in name]
+                self.assertEqual(bool(swashes), style == "Bold")
                 comma_family = {cmap[ord(char)] for char in ",;'\"`"}
-                inks = {name: glyph_geometry(glyf[name]) for name in names + tabular}
+                glyph_names = names + tabular + swashes
+                inks = {name: glyph_geometry(glyf[name]) for name in glyph_names}
                 gap = font_units(weight.letter_space)
-                for left in names + tabular:
-                    for right in names + tabular:
+                for left in glyph_names:
+                    for right in glyph_names:
                         if left not in symbols and right not in symbols:
                             continue
                         if (left in tabular or right in tabular) and not {left, right} & comma_family:
