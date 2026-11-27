@@ -243,7 +243,7 @@ body[data-weight="both"] .grid { grid-template-columns: repeat(auto-fill, minmax
 <main class="wrap">
   <section aria-labelledby="h-try">
     <h2 id="h-try">직접 써 보기</h2>
-    <textarea id="text" aria-label="써 볼 글자" rows="2" spellcheck="false" autocomplete="off" autocapitalize="characters">NOT4K — READY? 3, 2, 1… GO!</textarea>
+    <textarea id="text" aria-label="써 볼 글자" rows="2" spellcheck="false" autocomplete="off" autocapitalize="characters">NOT4K — READY? 3, 2, 1... GO!</textarea>
     <p class="note missing" id="missing" hidden></p>
     <div class="rows" lang="en">
       <div class="row"><span class="tag">REGULAR</span><div class="spec r" id="pv-r"></div></div>
@@ -262,7 +262,7 @@ body[data-weight="both"] .grid { grid-template-columns: repeat(auto-fill, minmax
     <div class="grid" id="g-letters" lang="en"></div>
     <h3>숫자 0–9</h3>
     <div class="grid" id="g-digits" lang="en"></div>
-    <h3>기호 32자</h3>
+    <h3>기호 31자</h3>
     <div class="grid" id="g-symbols" lang="en"></div>
   </section>
   <noscript><p class="note">견본과 설정은 JavaScript를 켜야 보입니다.</p></noscript>
@@ -273,7 +273,7 @@ body[data-weight="both"] .grid { grid-template-columns: repeat(auto-fill, minmax
   const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const DIGITS = "0123456789";
   // Same order as SYMBOLS in not4k_font/symbols.py.
-  const SYMBOLS = ".,:;-/%+()'\"!?#&×·—…=←→↑↓[]\\`*◇◆";
+  const SYMBOLS = ".,:;-/%+()'\"!?#&×·—=←→↑↓[]\\`*◇◆";
   const SAMPLES = [
     "PERFECT!  GOOD◇  MISS",
     "ACCURACY 99.50%",
@@ -283,7 +283,7 @@ body[data-weight="both"] .grid { grid-template-columns: repeat(auto-fill, minmax
     "SONG #4 & REMIX",
     "[A] [S] [K] [L]",
     "← ↑ ↓ →",
-    "LOADING…",
+    "LOADING...",
     "EASY · NORMAL · HARD",
   ];
   const SUPPORTED = new Set([...LETTERS, ...LETTERS.toLowerCase(), ...DIGITS, ...SYMBOLS, " "]);
