@@ -1,10 +1,11 @@
 import math
 import unittest
 
+from shapely.affinity import scale
 from shapely.geometry import LineString, Polygon, box
 
 from export_fonts import WEIGHTS
-from not4k_font.geometry import CORNER_HEIGHT, DIAGONAL_RUN, DIAGONAL_TAN, pieces_of
+from not4k_font.geometry import CORNER_HEIGHT, DIAGONAL_RUN, DIAGONAL_SIN, DIAGONAL_TAN, pieces_of
 from not4k_font.glyphs import draw_three
 from not4k_font.symbols import AMPERSAND_LEG_TOP, SYMBOLS, build_symbols
 
@@ -14,7 +15,7 @@ DIAGONAL_DEGREES = math.degrees(math.atan(DIAGONAL_TAN))
 SQUARE_CORNERED_DIAGONAL_LINES = {
     **dict.fromkeys(".:·-—=+![]", 0),
     **dict.fromkeys("←→↑↓", 2),
-    **dict.fromkeys("*%", 4),
+    **dict.fromkeys("*%<>", 4),
 }
 
 
@@ -65,6 +66,18 @@ class SymbolShapeTest(unittest.TestCase):
             for char, count in SQUARE_CORNERED_DIAGONAL_LINES.items():
                 with self.subTest(style=style, char=char):
                     self.assertEqual(len(diagonal_lines(outlines[char])), count)
+
+    def test_angle_signs_keep_the_approved_height_and_diagonal_weight(self):
+        heights = {"Regular": 70, "Bold": 74}
+        for style, weight, _ in WEIGHTS:
+            outlines, _ = build_symbols(weight)
+            less, greater = outlines["<"], outlines[">"]
+            height = heights[style]
+            with self.subTest(style=style):
+                self.assertEqual(less.bounds[1::2], (50 - height / 2, 50 + height / 2))
+                self.assertAlmostEqual(scale(less, xfact=-1, origin="center").symmetric_difference(greater).area, 0)
+                for y in (50 - height / 4, 50 + height / 4):
+                    self.assertAlmostEqual(ink_width_at(less, y) * DIAGONAL_SIN, weight.diagonal)
 
     def test_comma_tail_keeps_the_head_width_down_to_12_below_the_baseline(self):
         for style, weight, _ in WEIGHTS:

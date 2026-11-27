@@ -78,6 +78,13 @@ def multiply(weight):
     return rising.union(reflect(rising))
 
 
+def less_than(weight):
+    """Draw an open chevron with the horizontal arrowhead's slope, centered at 50."""
+    height = {REGULAR: 70, BOLD: 74}[weight]
+    upper = diagonal_bar(height / 2, weight.diagonal_across, bottom=50)
+    return upper.union(scale(upper, yfact=-1, origin=(0, 50)))
+
+
 def percent(weight):
     width = weight.scaled_width(54)
     height = 50
@@ -259,7 +266,7 @@ def hollow_trill_diamond(weight):
     return diamond.difference(diamond.buffer(-stroke, join_style="mitre"))
 
 
-SYMBOLS = ".…,:;-/%+()'\"!?#&×·—=←→↑↓[]\\`*◇◆"
+SYMBOLS = ".…,:;-/%+()'\"!?#&×·—=←→↑↓[]\\`*◇◆<>"
 
 # Comma tails hang outside the spacing body, on the (left, right), so spacing is measured from the heads.
 TAIL_OVERHANGS = {",": (TAIL_RUN, 0), ";": (TAIL_RUN, 0), "'": (TAIL_RUN, 0), '"': (TAIL_RUN, 0), "`": (0, TAIL_RUN)}
@@ -275,6 +282,7 @@ def build_symbols(weight):
     slash = diagonal_bar(100, weight.diagonal_across)
     right = horizontal_arrow(weight)
     up = vertical_arrow(weight)
+    less = less_than(weight)
     shapes = {
         ".": point,
         "…": unary_union([translate(point, xoff=index * period_step) for index in range(3)]),
@@ -310,6 +318,8 @@ def build_symbols(weight):
         "*": asterisk(weight),
         "◇": hollow_trill_diamond(weight),
         "◆": trill_diamond(weight),
+        "<": less,
+        ">": reflect(less),
     }
     outlines, bodies = {}, {}
     for char, shape in shapes.items():
