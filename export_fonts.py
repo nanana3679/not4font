@@ -88,22 +88,28 @@ def kerning_feature(
                 rules.append(f"  pos {left_class} {right_class} {adjustment};")
             else:
                 rules.extend(f"  pos {left} {right} {adjustment};" for left, right in product(left_forms, right_forms))
-    boundary = swash_boundary_kerning(word_forms, clipped_names, forms, outlines, glyphs, pair_shifts, letter_space)
+    boundary = boundary_kerning(
+        word_forms, clipped_names, forms, outlines, metrics, glyphs, pair_shifts, letter_space
+    )
     return "\n".join(["feature kern {", *rules, *boundary, "} kern;"])
 
 
-def swash_boundary_kerning(word_forms, clipped_names, forms, outlines, glyphs, pair_shifts, letter_space):
-    """Give word-end swashes room next to spaces and marks.
+def boundary_kerning(word_forms, clipped_names, forms, outlines, metrics, glyphs, pair_shifts, letter_space):
+    """Keep the word gap and the spacing around swashes intact.
 
-    Every separator moves by the swash's overhang beyond the base outline. A mark whose ink would still
-    come closer than the letter space, such as a comma tail under a low swash, gets a pair rule that
-    moves it until the inks clear. Pair rules come before class rules in the lookup, so they win.
+    An overhanging glyph moves the following space past its ink, leaving the space's full width.
+    Marks already clear the base glyph's ink, so only the swash extension needs extra room.
+    Pair rules for marks whose tails need further clearance take precedence over class rules.
     """
-    if not word_forms:
-        return []
     before = defaultdict(list)
     after = defaultdict(list)
-    exceptions = []
+    pairs = []
+    for name, outline in outlines.items():
+        if outline.numberOfContours:
+            overhang = outline.xMax - metrics[name][0]
+            if overhang > 0:
+                pairs.append(f"  pos {name} space {overhang};")
+
     for char, variants in word_forms.items():
         base = outlines[GLYPH_NAMES[char]]
         for (start, end), (name, shape) in variants.items():
@@ -124,15 +130,19 @@ def swash_boundary_kerning(word_forms, clipped_names, forms, outlines, glyphs, p
                     amount = overhang + tail_clearance(shape, glyphs[mark], side, shift, letter_space)
                     if amount > overhang:
                         marks = forms[GLYPH_NAMES[mark]]
-                        pairs = product(alternates, marks) if side == 1 else product(marks, alternates)
-                        exceptions.extend(f"  pos {left} {right} {amount};" for left, right in pairs)
-    separators = glyph_class(["space", *(form for char in SYMBOLS for form in forms[GLYPH_NAMES[char]])])
+                        mark_pairs = product(alternates, marks) if side == 1 else product(marks, alternates)
+                        pairs.extend(f"  pos {left} {right} {amount};" for left, right in mark_pairs)
+    if not (pairs or before or after):
+        return []
+    mark_forms = [form for char in SYMBOLS for form in forms[GLYPH_NAMES[char]]]
+    marks = glyph_class(mark_forms)
+    separators = glyph_class(["space", *mark_forms])
     return [
-        "lookup SwashClearance {",
-        *exceptions,
+        "lookup BoundaryClearance {",
+        *pairs,
         *(f"  pos {separators} {glyph_class(names)} {amount};" for amount, names in before.items()),
-        *(f"  pos {glyph_class(names)} {separators} {amount};" for amount, names in after.items()),
-        "} SwashClearance;",
+        *(f"  pos {glyph_class(names)} {marks} {amount};" for amount, names in after.items()),
+        "} BoundaryClearance;",
     ]
 
 

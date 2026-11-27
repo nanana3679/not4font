@@ -1,10 +1,13 @@
 import json
 import unittest
+from functools import cache
+from itertools import product
 from pathlib import Path
 from string import ascii_uppercase, digits
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
+import uharfbuzz as hb
 from fontTools.ttLib import TTFont
 from shapely.affinity import translate
 from shapely.geometry import Polygon
@@ -111,6 +114,72 @@ class ExportFontsTest(unittest.TestCase):
                         self.assertEqual(advance, font_units(right - left))
                         self.assertEqual(lsb, 0)
                         self.assertGreater(font["glyf"][name].xMax, advance)
+
+    def test_shaped_pairs_keep_their_designed_gap_after_overhanging_ink(self):
+        characters = FONT_CHARACTERS.upper() + " "
+        for style, weight, _ in WEIGHTS:
+            path = self.output / f"NOT4FONT-{style}.ttf"
+            shaper = hb.Font(hb.Face(path.read_bytes()))
+            with TTFont(path) as font:
+                names = font.getGlyphOrder()
+                metrics = font["hmtx"].metrics
+                space = metrics["space"][0]
+                outlines = font["glyf"]
+                right_edges = {
+                    name: outlines[name].xMax for name in names
+                    if outlines[name].numberOfContours and outlines[name].xMax > metrics[name][0]
+                }
+                inks = {name: glyph_geometry(outlines[name]) for name in names if outlines[name].numberOfContours}
+            glyphs, bodies = build_glyphs(weight)
+            glyphs["z"] = bodies["z"] = draw_z(weight, angled_ends=True)
+            extra_kerning = edition_kerning(glyphs, bodies, weight.letter_space)
+
+            @cache
+            def letter_shift(left, right):
+                shift = least_shift(bodies[left], bodies[right], weight.letter_space)
+                return font_units(shift + extra_kerning.get((left, right), 0))
+
+            @cache
+            def ink_gap(left, right, shift):
+                return inks[left].distance(translate(inks[right], xoff=shift / UNITS_PER_DESIGN_UNIT))
+
+            for preference, tabular in product((None, "ss01", "ss02"), (False, True)):
+                features = {"tnum": tabular}
+                if preference:
+                    features[preference] = True
+                seen = set()
+                # Include interior glyphs and glyphs cut by the preceding R.
+                for prefix, suffix, first, second in product(("", "A", "R"), ("", "A"), characters, characters):
+                    text = prefix + first + second + suffix
+                    index = len(prefix)
+                    buffer = hb.Buffer()
+                    buffer.add_str(text)
+                    buffer.direction = "ltr"
+                    buffer.script = "Latn"
+                    hb.shape(shaper, buffer, features)
+                    left, right = [names[info.codepoint] for info in buffer.glyph_infos[index:index + 2]]
+                    if left not in right_edges:
+                        continue
+                    before, after = buffer.glyph_positions[index:index + 2]
+                    shift = before.x_advance + after.x_offset - before.x_offset
+                    pair = (left, right, shift)
+                    if pair in seen:
+                        continue
+                    seen.add(pair)
+                    with self.subTest(style=style, features=features, text=text, pair=(left, right)):
+                        if right == "space":
+                            gap = shift + space - right_edges[left]
+                            self.assertGreaterEqual(gap, space)
+                        else:
+                            if first in SYMBOLS or second in SYMBOLS:
+                                minimum = weight.letter_space
+                            else:
+                                # Letter pairs keep their body-based placement, including stencil cuts and touching 4s.
+                                expected_shift = metrics[left][0]
+                                if not (tabular and (first in digits or second in digits)):
+                                    expected_shift = letter_shift(first.lower(), second.lower())
+                                minimum = ink_gap(left, right, expected_shift)
+                            self.assertGreaterEqual(ink_gap(left, right, shift), minimum - 1 / UNITS_PER_DESIGN_UNIT)
 
     def test_ra_adds_25_percent_of_clearance_and_rx_uses_default_gap(self):
         for style, weight, _ in WEIGHTS:
