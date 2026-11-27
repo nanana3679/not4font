@@ -180,16 +180,17 @@ body[data-weight="regular"] .b,
 body[data-weight="bold"] .r { display: none; }
 body.tnum .spec, body.tnum .g { font-variant-numeric: tabular-nums; }
 
-/* Ascent 0.875em, descent 0.125em, cap height 0.78125em: the guides sit inside each line box. */
+/* Ascent 0.875em, descent 0.125em, cap height 0.78125em: the guides sit inside each line box.
+   Each 1px line lies just outside the ink, so pixel centres never land on a colour stop. */
 body.guides .spec, body.guides .g {
   --half: calc((var(--lh) - 1) / 2 * 1em);
   --cap-y: calc(var(--half) + 0.09375em);
   --base-y: calc(var(--half) + 0.875em);
   background-image: linear-gradient(to bottom,
-    transparent calc(var(--cap-y) - 0.5px), var(--cap) calc(var(--cap-y) - 0.5px),
-    var(--cap) calc(var(--cap-y) + 0.5px), transparent calc(var(--cap-y) + 0.5px),
-    transparent calc(var(--base-y) - 0.5px), var(--base) calc(var(--base-y) - 0.5px),
-    var(--base) calc(var(--base-y) + 0.5px), transparent calc(var(--base-y) + 0.5px));
+    transparent calc(var(--cap-y) - 1px), var(--cap) calc(var(--cap-y) - 1px),
+    var(--cap) var(--cap-y), transparent var(--cap-y),
+    transparent var(--base-y), var(--base) var(--base-y),
+    var(--base) calc(var(--base-y) + 1px), transparent calc(var(--base-y) + 1px));
   background-size: 100% calc(var(--lh) * 1em);
 }
 
