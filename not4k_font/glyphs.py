@@ -488,16 +488,21 @@ def draw_s(weight):
     return unary_union([upper, lower])
 
 
-def draw_t(weight):
-    width = weight.scaled_width(97)
-    bar = polygon(
+def cap_bar(width, thickness):
+    bevel = thickness * DIAGONAL_RUN
+    return polygon(
         [
             (0, 100),
             (width, 100),
-            (width - weight.round_horizontal * DIAGONAL_RUN, 100 - weight.round_horizontal),
-            (weight.round_horizontal * DIAGONAL_RUN, 100 - weight.round_horizontal),
+            (width - bevel, 100 - thickness),
+            (bevel, 100 - thickness),
         ]
     )
+
+
+def draw_t(weight):
+    width = weight.scaled_width(97)
+    bar = cap_bar(width, weight.round_horizontal)
     left = (width - weight.stem) / 2
     return unary_union(
         [bar, polygon(rectangle(left, 0, left + weight.stem, 100 - weight.round_horizontal + 1))]
@@ -563,14 +568,18 @@ def draw_y(weight):
     )
 
 
-def draw_z(weight):
+def draw_z(weight, *, angled_ends=False):
     width = 78 + weight.diagonal_across
+    thickness = weight.stacked_horizontal
     diagonal = band((0, weight.diagonal_across, 0), (width - weight.diagonal_across, width, 100))
     room = diagonal.buffer(weight.stencil_gap, join_style="mitre")
-    bars = [
-        polygon(rectangle(0, 100 - weight.stacked_horizontal, width, 100)).difference(room),
-        polygon(rectangle(0, 0, width, weight.stacked_horizontal)).difference(room),
-    ]
+    if angled_ends:
+        top = cap_bar(width, thickness)
+        bottom = rotate(top, 180, origin=(width / 2, 50))
+    else:
+        top = polygon(rectangle(0, 100 - thickness, width, 100))
+        bottom = polygon(rectangle(0, 0, width, thickness))
+    bars = [top.difference(room), bottom.difference(room)]
     return discard_small_pieces(unary_union(bars + [diagonal]), 200 * (weight.stem / 30) ** 2)
 
 
