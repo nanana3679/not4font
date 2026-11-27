@@ -11,8 +11,18 @@ RA_CLEARANCE_FRACTION = 0.25
 
 def least_shift(before, body, gap):
     """Find the horizontal offset that puts the next body at the requested gap."""
-    low = before.bounds[0] - body.bounds[2]
-    high = before.bounds[2] + gap + 1
+    return first_clear_shift(before, body, gap, before.bounds[0] - body.bounds[2], before.bounds[2] + gap + 1)
+
+
+def clear_ink(before, after, shift, gap):
+    """Move the ink of `after` right of `shift` until it is at least `gap` from the ink of `before`."""
+    if before.distance(translate(after, shift, 0)) >= gap - 1e-9:
+        return shift
+    # Search only to the right of `shift`, so a mark never settles inside a counter.
+    return first_clear_shift(before, after, gap, shift, before.bounds[2] - after.bounds[0] + gap)
+
+
+def first_clear_shift(before, body, gap, low, high):
     for _ in range(60):
         middle = (low + high) / 2
         if before.distance(translate(body, middle, 0)) >= gap - 1e-9:

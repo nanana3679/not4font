@@ -18,8 +18,8 @@ from shapely.geometry.polygon import orient
 
 from not4k_font.geometry import pieces_of
 from not4k_font.glyphs import BOLD, CHARACTERS, REGULAR, build_glyphs
-from not4k_font.spacing import cut_overlaps, edition_kerning, least_shift
-from not4k_font.symbols import SYMBOLS, build_symbols
+from not4k_font.spacing import clear_ink, cut_overlaps, edition_kerning, least_shift
+from not4k_font.symbols import SYMBOLS, TAIL_OVERHANGS, build_symbols
 
 
 HERE = Path(__file__).parent
@@ -52,18 +52,20 @@ def draw_glyph(shape):
     return pen.glyph()
 
 
-def kerning_feature(pair_shifts, metrics, clipped_names):
-    forms = {
-        name: (name, clipped_names[name]) if name in clipped_names else (name,)
-        for name in GLYPH_NAMES.values()
+def kerning_feature(pair_shifts, metrics, clipped_names, tabular_adjustments):
+    def forms(name):
+        return (name, clipped_names[name]) if name in clipped_names else (name,)
+
+    adjustments = {
+        (GLYPH_NAMES[left], GLYPH_NAMES[right]): font_units(shift) - metrics[GLYPH_NAMES[left]][0]
+        for (left, right), shift in pair_shifts.items()
     }
+    adjustments.update(tabular_adjustments)
     rules = []
-    for (left, right), shift in pair_shifts.items():
-        left_name, right_name = GLYPH_NAMES[left], GLYPH_NAMES[right]
-        adjustment = font_units(shift) - metrics[left_name][0]
+    for (left_name, right_name), adjustment in adjustments.items():
         if adjustment:
-            for left_form in forms[left_name]:
-                for right_form in forms[right_name]:
+            for left_form in forms(left_name):
+                for right_form in forms(right_name):
                     rules.append(f"  pos {left_form} {right_form} {adjustment};")
     return "\n".join(["feature kern {", *rules, "} kern;"])
 
@@ -87,6 +89,35 @@ def add_tabular_digits(outlines, metrics, letter_space):
     return names
 
 
+def tabular_outlines(glyphs, tabular_names, metrics):
+    """Return each tabular digit outline in design units, placed in its cell."""
+    shapes = {}
+    for digit in digits:
+        name = GLYPH_NAMES[digit]
+        tabular = tabular_names[name]
+        offset = (metrics[tabular][1] - metrics[name][1]) / UNITS_PER_DESIGN_UNIT
+        shapes[tabular] = translate(glyphs[digit], xoff=offset)
+    return shapes
+
+
+def tabular_mark_kerning(glyphs, tabular_names, metrics, letter_space):
+    """Move comma tails apart from tabular digits, which take no other kerning, keeping the cells fixed."""
+    adjustments = {}
+    for tabular, digit in tabular_outlines(glyphs, tabular_names, metrics).items():
+        for char in TAIL_OVERHANGS:
+            mark = GLYPH_NAMES[char]
+            for left, right, left_shape, right_shape in (
+                (tabular, mark, digit, glyphs[char]),
+                (mark, tabular, glyphs[char], digit),
+            ):
+                advance = metrics[left][0] / UNITS_PER_DESIGN_UNIT
+                shift = clear_ink(left_shape, right_shape, advance, letter_space)
+                adjustment = font_units(shift) - metrics[left][0]
+                if adjustment > 0:
+                    adjustments[left, right] = adjustment
+    return adjustments
+
+
 def add_clipped_glyphs(glyphs, pair_shifts, weight, tabular_names, outlines, metrics):
     r_name = GLYPH_NAMES["r"]
     r_pieces = pieces_of(glyphs["r"])
@@ -95,11 +126,8 @@ def add_clipped_glyphs(glyphs, pair_shifts, weight, tabular_names, outlines, met
         name: (glyphs[char], pair_shifts["r", char])
         for char, name in GLYPH_NAMES.items()
     }
-    for digit in digits:
-        name = GLYPH_NAMES[digit]
-        tabular = tabular_names[name]
-        offset = (metrics[tabular][1] - metrics[name][1]) / UNITS_PER_DESIGN_UNIT
-        candidates[tabular] = (translate(glyphs[digit], xoff=offset), r_advance)
+    for tabular, shape in tabular_outlines(glyphs, tabular_names, metrics).items():
+        candidates[tabular] = (shape, r_advance)
 
     names = {}
     for name, (shape, shift) in candidates.items():
@@ -133,8 +161,12 @@ def pair_shifts_for(glyphs, bodies, letter_space, extra_kerning):
     for left in GLYPH_NAMES:
         for right in GLYPH_NAMES:
             if left in SYMBOLS or right in SYMBOLS:
-                # Keep short marks in reading order and clear the overhangs of R and 4.
-                shift = glyphs[left].bounds[2] - bodies[right].bounds[0] + letter_space
+                # Keep short marks in reading order. Letters are measured by their ink to clear the
+                # overhangs of R and 4, and marks by their bodies so that comma tails hang outside.
+                edge = bodies[left] if left in SYMBOLS else glyphs[left]
+                shift = edge.bounds[2] - bodies[right].bounds[0] + letter_space
+                # Move a hanging tail apart from its neighbour when the inks come closer than the letter space.
+                shift = clear_ink(glyphs[left], glyphs[right], shift, letter_space)
             else:
                 shift = least_shift(bodies[left], bodies[right], letter_space)
                 shift += extra_kerning.get((left, right), 0)
@@ -146,16 +178,16 @@ def build_font(edition, style, weight, weight_class):
     glyphs, bodies = build_glyphs(weight)
     letter_space = weight.letter_space
     extra_kerning = edition_kerning(glyphs, bodies, letter_space)
-    symbols = build_symbols(weight)
-    glyphs.update(symbols)
-    bodies.update(symbols)
+    symbol_outlines, symbol_bodies = build_symbols(weight)
+    glyphs.update(symbol_outlines)
+    bodies.update(symbol_bodies)
     weight_record = edition["weights"][style.lower()]
     space_advance = font_units(edition["rules"]["space"])
 
     outlines = {name: TTGlyphPen(None).glyph() for name in (".notdef", "space")}
     metrics = {name: (space_advance, 0) for name in outlines}
     for char, name in GLYPH_NAMES.items():
-        if char in symbols:
+        if char in SYMBOLS:
             left, _, right, _ = bodies[char].bounds
         else:
             left, _, right, _ = weight_record["glyphs"][char.upper()]["spacingBody"]
@@ -164,6 +196,7 @@ def build_font(edition, style, weight, weight_class):
     tabular_names = add_tabular_digits(outlines, metrics, letter_space)
     pair_shifts = pair_shifts_for(glyphs, bodies, letter_space, extra_kerning)
     clipped_names = add_clipped_glyphs(glyphs, pair_shifts, weight, tabular_names, outlines, metrics)
+    tabular_adjustments = tabular_mark_kerning(glyphs, tabular_names, metrics, letter_space)
 
     cmap = {ord(char): GLYPH_NAMES[char.lower()] for char in FONT_CHARACTERS + ascii_uppercase}
     cmap[ord(" ")] = "space"
@@ -201,7 +234,7 @@ def build_font(edition, style, weight, weight_class):
         sxHeight=font_units(100),
     )
     builder.setupPost()
-    kern = kerning_feature(pair_shifts, metrics, clipped_names)
+    kern = kerning_feature(pair_shifts, metrics, clipped_names, tabular_adjustments)
     substitutions = substitution_features(tabular_names, clipped_names)
     addOpenTypeFeaturesFromString(builder.font, f"{kern}\n{substitutions}")
     return builder.font

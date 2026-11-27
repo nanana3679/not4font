@@ -13,6 +13,7 @@ from shapely.ops import unary_union
 from export_fonts import FONT_CHARACTERS, GLYPH_NAMES, HERE, UNITS_PER_DESIGN_UNIT, WEIGHTS, font_units, main
 from not4k_font.glyphs import CHARACTERS, build_glyphs
 from not4k_font.spacing import compose_line, edition_kerning, least_shift, ra_clearance
+from not4k_font.symbols import SYMBOLS
 
 
 def pair_adjustment(font, left, right):
@@ -176,7 +177,7 @@ class ExportFontsTest(unittest.TestCase):
                 self.assertEqual(pair_adjustment(font, "R", "two.tnum.afterR"), 0)
 
     def test_ui_symbols_have_nonempty_outlines_in_both_weights_and_formats(self):
-        required = ".,:;-/%+()'\"!?#&×·—…=←→↑↓[]\\`*◇"
+        required = ".,:;-/%+()'\"!?#&×·—…=←→↑↓[]\\`*◇◆"
         for style, weight, _ in WEIGHTS:
             for extension in ("ttf", "woff2"):
                 with self.subTest(style=style, extension=extension):
@@ -192,3 +193,36 @@ class ExportFontsTest(unittest.TestCase):
                         for left, right in (("R", "period"), ("four", "exclam"), ("period", "quotesingle")):
                             shift = metrics[left][0] + pair_adjustment(font, left, right)
                             self.assertEqual(shift, glyphs[left].xMax + font_units(weight.letter_space))
+
+    def test_symbol_pairs_keep_the_letter_space_between_inks_and_comma_heads_at_the_letter_space(self):
+        for style, weight, _ in WEIGHTS:
+            with TTFont(self.output / f"NOT4K-{style}.ttf") as font:
+                cmap = font.getBestCmap()
+                glyf = font["glyf"]
+                metrics = font["hmtx"].metrics
+                names = [cmap[ord(char)] for char in CHARACTERS.upper() + SYMBOLS]
+                symbols = {cmap[ord(char)] for char in SYMBOLS}
+                # Tabular digits take no kerning except to move comma tails apart.
+                tabular = [f"{GLYPH_NAMES[digit]}.tnum" for digit in digits]
+                comma_family = {cmap[ord(char)] for char in ",;'\"`"}
+                inks = {name: glyph_geometry(glyf[name]) for name in names + tabular}
+                gap = font_units(weight.letter_space)
+                for left in names + tabular:
+                    for right in names + tabular:
+                        if left not in symbols and right not in symbols:
+                            continue
+                        if (left in tabular or right in tabular) and not {left, right} & comma_family:
+                            continue
+                        shift = metrics[left][0] + pair_adjustment(font, left, right)
+                        distance = inks[left].distance(translate(inks[right], shift / UNITS_PER_DESIGN_UNIT))
+                        with self.subTest(style=style, pair=(left, right)):
+                            # Allow one font unit of rounding.
+                            self.assertGreaterEqual(distance, weight.letter_space - 1 / UNITS_PER_DESIGN_UNIT)
+                # Where the tail stays clear, the head sits at the letter space; otherwise it moves away.
+                for left, right, moved in (("T", "quotesingle", False), ("L", "comma", False), ("H", "quotesingle", True)):
+                    with self.subTest(style=style, pair=(left, right)):
+                        shift = metrics[left][0] + pair_adjustment(font, left, right)
+                        if moved:
+                            self.assertGreater(shift, glyf[left].xMax + gap)
+                        else:
+                            self.assertEqual(shift, glyf[left].xMax + gap)
