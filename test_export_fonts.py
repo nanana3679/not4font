@@ -6,7 +6,7 @@ from tempfile import TemporaryDirectory
 from unittest.mock import patch
 
 from fontTools.ttLib import TTFont
-from shapely.affinity import translate
+from shapely.affinity import scale, translate
 from shapely.geometry import Polygon
 from shapely.ops import unary_union
 
@@ -179,7 +179,7 @@ class ExportFontsTest(unittest.TestCase):
                 gsub = font["GSUB"].table
                 features = {record.FeatureTag: record.Feature for record in gsub.FeatureList.FeatureRecord}
                 self.assertLess(max(features["tnum"].LookupListIndex), min(features["calt"].LookupListIndex))
-                self.assertEqual(gsub.LookupList.Lookup[features["calt"].LookupListIndex[0]].LookupType, 6)
+                self.assertEqual(gsub.LookupList.Lookup[features["calt"].LookupListIndex[-1]].LookupType, 6)
 
                 outlines = font["glyf"]
                 metrics = font["hmtx"].metrics
@@ -290,6 +290,57 @@ class ExportFontsTest(unittest.TestCase):
                         else:
                             self.assertEqual(shift, glyf[left].xMax + gap)
 
+    def test_calt_opens_quotes_before_letters_and_digits_at_the_start_or_after_space(self):
+        for style, _, _ in WEIGHTS:
+            with self.subTest(style=style), TTFont(self.output / f"NOT4FONT-{style}.woff2") as font:
+                lookups = font["GSUB"].table.LookupList.Lookup
+                blocked, replaced = feature_lookups(font, "calt")[0].SubTable
+                quotes = {"quotesingle": "quotesingle.open", "quotedbl": "quotedbl.open"}
+                tabular = {f"{GLYPH_NAMES[digit]}.tnum" for digit in digits}
+                for rule in (blocked, replaced):
+                    self.assertEqual(set(rule.InputCoverage[0].glyphs), quotes.keys())
+                    self.assertEqual(
+                        set(rule.LookAheadCoverage[0].glyphs),
+                        {GLYPH_NAMES[char] for char in CHARACTERS} | tabular,
+                    )
+                self.assertEqual(
+                    set(blocked.BacktrackCoverage[0].glyphs),
+                    {".notdef", *GLYPH_NAMES.values()} | tabular,
+                )
+                self.assertFalse(blocked.SubstLookupRecord)
+                self.assertFalse(replaced.BacktrackCoverage)
+                record, = replaced.SubstLookupRecord
+                self.assertEqual(record.SequenceIndex, 0)
+                self.assertEqual(lookups[record.LookupListIndex].SubTable[0].mapping, quotes)
+
+    def test_opening_quotes_rise_right_to_the_cap_line_and_clear_following_ink(self):
+        for style, weight, _ in WEIGHTS:
+            with TTFont(self.output / f"NOT4FONT-{style}.ttf") as font:
+                glyf = font["glyf"]
+                metrics = font["hmtx"].metrics
+                following = {GLYPH_NAMES[char] for char in CHARACTERS}
+                following.update(
+                    name for name in font.getGlyphOrder()
+                    if name.endswith(".tnum") or (".start" in name and not name.endswith(".afterR"))
+                )
+                for name in ("quotesingle", "quotedbl"):
+                    opened = f"{name}.open"
+                    advance = metrics[name][0]
+                    closing = glyph_geometry(glyf[name])
+                    opening = glyph_geometry(glyf[opened])
+                    with self.subTest(style=style, glyph=opened):
+                        self.assertEqual(metrics[opened], (advance, 0))
+                        _, bottom, _, top = closing.bounds
+                        center = (advance / (2 * UNITS_PER_DESIGN_UNIT), (bottom + top) / 2)
+                        rotated = scale(closing, xfact=-1, yfact=-1, origin=center)
+                        self.assertEqual(glyf[opened].yMax, font_units(100))
+                        self.assertAlmostEqual(opening.symmetric_difference(rotated).area, 0)
+                    for right in following:
+                        shift = advance + pair_adjustment(font, opened, right)
+                        distance = opening.distance(translate(glyph_geometry(glyf[right]), shift / UNITS_PER_DESIGN_UNIT))
+                        with self.subTest(style=style, pair=(opened, right)):
+                            self.assertGreaterEqual(distance, weight.letter_space - 1 / UNITS_PER_DESIGN_UNIT)
+
     def test_z_has_52_degree_outer_tips_and_three_stencil_pieces_in_both_formats(self):
         for style, weight, _ in WEIGHTS:
             width = 78 + weight.diagonal_across
@@ -360,7 +411,7 @@ class ExportFontsTest(unittest.TestCase):
             self.assertNotIn("L.endBottom", upper)
             self.assertNotIn("C", upper)
             self.assertNotIn("C", lower)
-            self.assertEqual([lookup.LookupType for lookup in feature_lookups(font, "calt")], [6, 6, 6])
+            self.assertEqual([lookup.LookupType for lookup in feature_lookups(font, "calt")], [6, 6, 6, 6])
 
     def test_swashes_leave_room_at_spaces_and_punctuation_and_keep_letter_pair_kerning(self):
         with TTFont(self.output / "NOT4FONT-Bold.woff2") as font:

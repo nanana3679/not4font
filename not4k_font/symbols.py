@@ -260,6 +260,7 @@ def hollow_trill_diamond(weight):
 
 
 SYMBOLS = ".…,:;-/%+()'\"!?#&×·—=←→↑↓[]\\`*◇◆"
+QUOTES = "'\""
 
 # Comma tails hang outside the spacing body, on the (left, right), so spacing is measured from the heads.
 TAIL_OVERHANGS = {",": (TAIL_RUN, 0), ";": (TAIL_RUN, 0), "'": (TAIL_RUN, 0), '"': (TAIL_RUN, 0), "`": (0, TAIL_RUN)}
@@ -319,3 +320,14 @@ def build_symbols(weight):
         outlines[char] = translate(shape, -body.bounds[0])
         bodies[char] = translate(body, -body.bounds[0])
     return outlines, bodies
+
+
+def opening_quote(shape, body):
+    """Turn the closing outline so the opening tail rises right to the cap line."""
+    left, _, right, _ = body.bounds
+    _, bottom, _, top = shape.bounds
+    center = ((left + right) / 2, (bottom + top) / 2)
+    return (
+        scale(shape, xfact=-1, yfact=-1, origin=center),
+        scale(body, xfact=-1, yfact=-1, origin=center),
+    )
