@@ -4,21 +4,21 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light dark">
-<title>NOT4K 글꼴 써 보기</title>
+<title>NOT4FONT 써 보기</title>
 <link rel="icon" href="data:,">
-<link rel="preload" href="fonts/NOT4K-Regular.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="fonts/NOT4K-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/NOT4FONT-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/NOT4FONT-Bold.woff2" as="font" type="font/woff2" crossorigin>
 <style>
 @font-face {
-  font-family: "NOT4K";
-  src: url("fonts/NOT4K-Regular.woff2") format("woff2");
+  font-family: "NOT4FONT";
+  src: url("fonts/NOT4FONT-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: block;
 }
 @font-face {
-  font-family: "NOT4K";
-  src: url("fonts/NOT4K-Bold.woff2") format("woff2");
+  font-family: "NOT4FONT";
+  src: url("fonts/NOT4FONT-Bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: block;
@@ -79,9 +79,9 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fo
 header.wrap { padding-top: 40px; padding-bottom: 28px; }
 .mark {
   margin: 0;
-  font-family: "NOT4K", var(--ui);
+  font-family: "NOT4FONT", var(--ui);
   font-weight: 700;
-  font-size: clamp(64px, 16vw, 152px);
+  font-size: clamp(36px, calc((100vw - 32px) / 6.6), 152px);
   line-height: 1;
   font-kerning: normal;
 }
@@ -142,7 +142,7 @@ textarea {
   border-radius: 0;
   background: var(--field);
   color: var(--ink);
-  font-family: "NOT4K", var(--ui);
+  font-family: "NOT4FONT", var(--ui);
   font-size: 20px;
   line-height: 1.4;
   font-kerning: normal;
@@ -161,7 +161,7 @@ body[data-weight="both"] .tag { display: block; }
 }
 
 .spec, .g {
-  font-family: "NOT4K", var(--ui);
+  font-family: "NOT4FONT", var(--ui);
   line-height: var(--lh);
   font-kerning: normal;
   font-synthesis: none;
@@ -209,7 +209,7 @@ body[data-weight="both"] .grid { grid-template-columns: repeat(auto-fill, minmax
 </head>
 <body data-weight="both">
 <header class="wrap">
-  <h1 class="mark" lang="en">NOT4K</h1>
+  <h1 class="mark" lang="en">NOT4FONT</h1>
 </header>
 
 <div class="wrap">
