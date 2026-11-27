@@ -22,6 +22,12 @@ def clear_ink(before, after, shift, gap):
     return first_clear_shift(before, after, gap, shift, before.bounds[2] - after.bounds[0] + gap)
 
 
+def symbol_pair_shift(before, after, before_edge, after_body, gap):
+    """Place short marks in reading order and move hanging ink clear of its neighbour."""
+    shift = before_edge.bounds[2] - after_body.bounds[0] + gap
+    return clear_ink(before, after, shift, gap)
+
+
 def first_clear_shift(before, body, gap, low, high):
     for _ in range(60):
         middle = (low + high) / 2

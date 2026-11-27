@@ -209,7 +209,7 @@ class ExportFontsTest(unittest.TestCase):
                 self.assertEqual(pair_adjustment(font, "R", "two.tnum.afterR"), 0)
 
     def test_ui_symbols_have_nonempty_outlines_in_both_weights_and_formats(self):
-        required = ".,:;-/%+()'\"!?#&×·—=←→↑↓[]\\`*◇◆"
+        required = ".…,:;-/%+()'\"!?#&×·—=←→↑↓[]\\`*◇◆"
         for style, weight, _ in WEIGHTS:
             for extension in ("ttf", "woff2"):
                 with self.subTest(style=style, extension=extension):
@@ -225,6 +225,33 @@ class ExportFontsTest(unittest.TestCase):
                         for left, right in (("R", "period"), ("four", "exclam"), ("period", "quotesingle")):
                             shift = metrics[left][0] + pair_adjustment(font, left, right)
                             self.assertEqual(shift, glyphs[left].xMax + font_units(weight.letter_space))
+
+    def test_ellipsis_matches_three_kerned_periods(self):
+        for style, _, _ in WEIGHTS:
+            for extension in ("ttf", "woff2"):
+                with self.subTest(style=style, extension=extension):
+                    with TTFont(self.output / f"NOT4FONT-{style}.{extension}") as font:
+                        cmap = font.getBestCmap()
+                        period, ellipsis = cmap[ord(".")], cmap[ord("…")]
+                        glyphs = font["glyf"]
+                        metrics = font["hmtx"].metrics
+                        advance, lsb = metrics[period]
+                        step = advance + pair_adjustment(font, period, period)
+                        point = glyph_geometry(glyphs[period])
+                        three_points = unary_union([
+                            translate(point, xoff=index * step / UNITS_PER_DESIGN_UNIT)
+                            for index in range(3)
+                        ])
+                        self.assertTrue(glyph_geometry(glyphs[ellipsis]).equals(three_points))
+                        self.assertEqual(metrics[ellipsis], (advance + 2 * step, lsb))
+                        for neighbor in font.getGlyphOrder():
+                            with self.subTest(neighbor=neighbor):
+                                self.assertEqual(
+                                    pair_adjustment(font, neighbor, ellipsis), pair_adjustment(font, neighbor, period)
+                                )
+                                self.assertEqual(
+                                    pair_adjustment(font, ellipsis, neighbor), pair_adjustment(font, period, neighbor)
+                                )
 
     def test_symbol_pairs_keep_the_letter_space_between_inks_and_comma_heads_at_the_letter_space(self):
         for style, weight, _ in WEIGHTS:

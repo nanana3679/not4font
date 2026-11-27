@@ -21,7 +21,7 @@ from shapely.ops import unary_union
 
 from not4k_font.geometry import pieces_of
 from not4k_font.glyphs import BOLD, CHARACTERS, REGULAR, build_glyphs, draw_z
-from not4k_font.spacing import clear_ink, cut_overlaps, edition_kerning, least_shift
+from not4k_font.spacing import clear_ink, cut_overlaps, edition_kerning, least_shift, symbol_pair_shift
 from not4k_font.symbols import SYMBOLS, TAIL_OVERHANGS, build_symbols
 from not4k_font.word_ends import allowed_positions, preferred_position, word_end_variant
 
@@ -322,9 +322,7 @@ def pair_shifts_for(glyphs, bodies, letter_space, extra_kerning):
                 # Keep short marks in reading order. Letters are measured by their ink to clear the
                 # overhangs of R and 4, and marks by their bodies so that comma tails hang outside.
                 edge = bodies[left] if left in SYMBOLS else glyphs[left]
-                shift = edge.bounds[2] - bodies[right].bounds[0] + letter_space
-                # Move a hanging tail apart from its neighbour when the inks come closer than the letter space.
-                shift = clear_ink(glyphs[left], glyphs[right], shift, letter_space)
+                shift = symbol_pair_shift(glyphs[left], glyphs[right], edge, bodies[right], letter_space)
             else:
                 shift = least_shift(bodies[left], bodies[right], letter_space)
                 shift += extra_kerning.get((left, right), 0)
