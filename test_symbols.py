@@ -12,7 +12,7 @@ DIAGONAL_DEGREES = math.degrees(math.atan(DIAGONAL_TAN))
 # Diagonal lines are the two edges of each slanted stroke or arrowhead, plus the stencil cuts the slash of % leaves on
 # its rings. A corner cut would add a line. & is left out: it keeps the corner cuts of the 3 it is built from.
 SQUARE_CORNERED_DIAGONAL_LINES = {
-    **dict.fromkeys(".:·…-—=+![]", 0),
+    **dict.fromkeys(".:·-—=+![]", 0),
     **dict.fromkeys("←→↑↓", 2),
     **dict.fromkeys("*%", 4),
 }

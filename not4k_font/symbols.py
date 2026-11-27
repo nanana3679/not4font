@@ -31,12 +31,6 @@ def colon(weight, bottom):
     return unary_union([translate(bottom, yoff=14), translate(dot(weight), yoff=62)])
 
 
-def ellipse_dots(weight):
-    point = dot(weight)
-    step = point.bounds[2] + weight.stencil_gap * 2
-    return unary_union([translate(point, xoff=step * index) for index in range(3)])
-
-
 def horizontal_bar(weight, width, center=50):
     height = weight.stacked_horizontal
     return polygon(rectangle(0, center - height / 2, width, center + height / 2))
@@ -265,7 +259,7 @@ def hollow_trill_diamond(weight):
     return diamond.difference(diamond.buffer(-stroke, join_style="mitre"))
 
 
-SYMBOLS = ".,:;-/%+()'\"!?#&×·—…=←→↑↓[]\\`*◇◆"
+SYMBOLS = ".,:;-/%+()'\"!?#&×·—=←→↑↓[]\\`*◇◆"
 
 # Comma tails hang outside the spacing body, on the (left, right), so spacing is measured from the heads.
 TAIL_OVERHANGS = {",": (TAIL_RUN, 0), ";": (TAIL_RUN, 0), "'": (TAIL_RUN, 0), '"': (TAIL_RUN, 0), "`": (0, TAIL_RUN)}
@@ -302,7 +296,6 @@ def build_symbols(weight):
         "×": multiply(weight),
         "·": translate(point, yoff=50 - point.bounds[3] / 2),
         "—": horizontal_bar(weight, 108),
-        "…": ellipse_dots(weight),
         "=": horizontal_bar(weight, 64, 34).union(horizontal_bar(weight, 64, 66)),
         "←": reflect(right),
         "→": right,
