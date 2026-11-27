@@ -2,23 +2,23 @@
 <html lang="ko">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>NOT4K 1판 글꼴 비교</title>
+<title>NOT4FONT 1판 글꼴 비교</title>
 <style>
   @font-face {
-    font-family: NOT4K;
-    src: url("out/fonts/NOT4K-Regular.woff2") format("woff2");
+    font-family: NOT4FONT;
+    src: url("out/fonts/NOT4FONT-Regular.woff2") format("woff2");
     font-weight: 400;
   }
   @font-face {
-    font-family: NOT4K;
-    src: url("out/fonts/NOT4K-Bold.woff2") format("woff2");
+    font-family: NOT4FONT;
+    src: url("out/fonts/NOT4FONT-Bold.woff2") format("woff2");
     font-weight: 700;
   }
   body { max-inline-size: 72rem; margin: 2rem auto; padding-inline: 1rem; font-family: system-ui, sans-serif; }
   svg { display: block; inline-size: 100%; block-size: auto; }
   image { opacity: 0.45; }
   text {
-    font: 128px NOT4K;
+    font: 128px NOT4FONT;
     font-kerning: normal;
     text-rendering: geometricPrecision;
     fill: #bf250b;
@@ -27,10 +27,10 @@
   }
   table { margin: 0 0 2rem; border-collapse: collapse; }
   th, td { padding-inline: 0.5rem 1.5rem; text-align: start; }
-  td { font: 2rem / 1.35 NOT4K; font-kerning: normal; }
+  td { font: 2rem / 1.35 NOT4FONT; font-kerning: normal; }
   .digit-samples .tabular { font-variant-numeric: tabular-nums; }
   .uncut { font-feature-settings: "calt" 0; }
-  .symbol-samples { font: clamp(1.25rem, 4vw, 2rem) / 1.5 NOT4K; font-kerning: normal; }
+  .symbol-samples { font: clamp(1.25rem, 4vw, 2rem) / 1.5 NOT4FONT; font-kerning: normal; }
   .symbol-samples p { margin-block: 0.2em; }
   #bold :is(text, td, .symbol-samples) { font-weight: 700; }
   .word-end-samples dl { margin: 0 0 2rem; }
@@ -38,13 +38,13 @@
   .word-end-samples dd {
     margin: .25rem 0 0;
     padding: .45em .7em;
-    font: 700 clamp(1.25rem, 3vw, 2rem) / 1.4 NOT4K;
+    font: 700 clamp(1.25rem, 3vw, 2rem) / 1.4 NOT4FONT;
     font-kerning: normal;
   }
   .word-end-samples .upper { font-feature-settings: "ss01" 1; }
   .word-end-samples .lower { font-feature-settings: "ss02" 1; }
 </style>
-<h1>NOT4K 1판 글꼴 비교</h1>
+<h1>NOT4FONT 1판 글꼴 비교</h1>
 <p>회색은 1판 SVG 견본이고, 붉은색은 WOFF2로 그린 글자입니다.</p>
 <section id="word-ends" class="word-end-samples">
   <h2>Bold 낱말 끝 삐침</h2>

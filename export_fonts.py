@@ -35,6 +35,7 @@ GLYPH_NAMES = {
     for char in FONT_CHARACTERS
 }
 WEIGHTS = (("Regular", REGULAR, 400), ("Bold", BOLD, 700))
+FAMILY = "NOT4FONT"
 
 
 def font_units(value):
@@ -360,8 +361,7 @@ def build_font(edition, style, weight, weight_class):
 
     cmap = {ord(char): GLYPH_NAMES[char.lower()] for char in FONT_CHARACTERS + ascii_uppercase}
     cmap[ord(" ")] = "space"
-    family = "NOT4K"
-    ps_name = f"{family}-{style}"
+    ps_name = f"{FAMILY}-{style}"
     frozen = datetime.fromisoformat(edition["frozen"]).replace(tzinfo=timezone.utc)
     timestamp = timestampSinceEpoch(frozen.timestamp())
     ascent, descent = font_units(112), font_units(-16)
@@ -374,10 +374,10 @@ def build_font(edition, style, weight, weight_class):
     builder.setupHorizontalMetrics(metrics)
     builder.setupHorizontalHeader(ascent=ascent, descent=descent)
     builder.setupNameTable({
-        "familyName": family,
+        "familyName": FAMILY,
         "styleName": style,
         "uniqueFontIdentifier": f"{ps_name};1.000",
-        "fullName": f"{family} {style}",
+        "fullName": f"{FAMILY} {style}",
         "psName": ps_name,
         "version": "Version 1.000",
     })
@@ -409,9 +409,9 @@ def main():
     edition = json.loads((HERE / "ed1" / "font-ed1.json").read_text())
     for style, weight, weight_class in WEIGHTS:
         font = build_font(edition, style, weight, weight_class)
-        font.save(output / f"NOT4K-{style}.ttf")
+        font.save(output / f"{FAMILY}-{style}.ttf")
         font.flavor = "woff2"
-        font.save(output / f"NOT4K-{style}.woff2")
+        font.save(output / f"{FAMILY}-{style}.woff2")
 
 
 if __name__ == "__main__":
