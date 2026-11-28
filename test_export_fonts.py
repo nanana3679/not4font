@@ -278,7 +278,7 @@ class ExportFontsTest(unittest.TestCase):
                 self.assertEqual(pair_adjustment(font, "R", "two.tnum.afterR"), 0)
 
     def test_ui_symbols_have_nonempty_outlines_in_both_weights_and_formats(self):
-        required = ".…,:;-/%+()'\"!?#&×·—=←→↑↓[]\\`*◇◆<>"
+        required = ".…,:;-/%+()'\"!?#&×·—=←→↑↓[]\\`*◇◆<>$^~@"
         for style, weight, _ in WEIGHTS:
             for extension in ("ttf", "woff2"):
                 with self.subTest(style=style, extension=extension):
