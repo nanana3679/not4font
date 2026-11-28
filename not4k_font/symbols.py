@@ -6,8 +6,10 @@ from shapely.affinity import scale, translate
 from shapely.geometry import LineString, box
 from shapely.ops import unary_union
 
-from .geometry import DIAGONAL_COS, DIAGONAL_RUN, DIAGONAL_SIN, pieces_of, polygon, rectangle
-from .glyphs import BOLD, REGULAR, draw_three, draw_two
+from .geometry import (
+    CORNER_HEIGHT, DIAGONAL_COS, DIAGONAL_RUN, DIAGONAL_SIN, offset_edges, pieces_of, polygon, rectangle,
+)
+from .glyphs import BOLD, REGULAR, draw_four, draw_s, draw_three, draw_two
 from .spacing import cut_overlaps, symbol_pair_shift
 
 TAIL_DEPTH = 12
@@ -83,6 +85,99 @@ def less_than(weight):
     height = {REGULAR: 70, BOLD: 74}[weight]
     upper = diagonal_bar(height / 2, weight.diagonal_across, bottom=50)
     return upper.union(scale(upper, yfact=-1, origin=(0, 50)))
+
+
+def dollar(weight):
+    """Keep the S intact and attach the stem at its top and bottom."""
+    body = draw_s(weight)
+    center = body.bounds[2] / 2
+    half_stem = weight.stacked_horizontal * 0.31
+    left, right = center - half_stem, center + half_stem
+    join = weight.stacked_horizontal / 2
+    return unary_union([body, box(left, -12, right, join), box(left, 100 - join, right, 112)])
+
+
+def caret(weight):
+    """Use the horizontal chevron's stroke angle, with the tip just above cap height."""
+    top = 104
+    height = 46
+    bottom = top - height
+    run = height * DIAGONAL_RUN
+    # Leave an open notch even in the short Bold caret.
+    across = weight.diagonal_across * 0.65
+    return polygon([
+        (0, bottom), (run, top), (2 * run, bottom),
+        (2 * run - across, bottom), (run, top - across / DIAGONAL_RUN), (across, bottom),
+    ])
+
+
+def tilde(weight):
+    """Join the rising ends with a vertical stroke, trimming the mitres to the same height."""
+    half_stroke = weight.stacked_horizontal * 0.35
+    half_height = 17 + half_stroke
+    half_width = (half_height + 6) * DIAGONAL_RUN
+    tip_rise = weight.stacked_horizontal
+    tip_run = tip_rise * DIAGONAL_RUN
+    path = LineString([
+        (-tip_run, 44 - tip_rise), (half_width, 50 + half_height),
+        (half_width, 50 - half_height), (2 * half_width + tip_run, 56 + tip_rise),
+    ])
+    ink = path.buffer(half_stroke, cap_style="flat", join_style="mitre")
+    width = 2 * half_width
+    wave = ink.intersection(box(0, 50 - half_height, width, 50 + half_height))
+
+    # Extend each 52-degree flank to a point at its end's center, then flatten the lower/upper corner it leaves.
+    tip_width = half_stroke / DIAGONAL_SIN
+    tip_height = half_stroke / DIAGONAL_COS
+    left = polygon([(-tip_width, 44), (0, 44 - tip_height), (0, 44 + tip_height)])
+    cut = box(-tip_width, 0, tip_width, 44 - 2 * tip_height / 3)
+    center = (half_width, 50)
+    right = scale(left, xfact=-1, yfact=-1, origin=center)
+    opposite_cut = scale(cut, xfact=-1, yfact=-1, origin=center)
+    pointed = unary_union([wave, left, right]).difference(unary_union([cut, opposite_cut]))
+
+    four = draw_four(weight)
+    four_left, four_bottom, _, four_top = four.bounds
+    edge = LineString([(four_left, four_bottom), (four_left, four_top)])
+    four_tip = four.intersection(edge).bounds[1]
+    aligned = translate(four, xoff=-tip_width - four_left, yoff=44 - four_tip)
+    # At this cut, the 4's horizontal edge meets the inner flank of the wave.
+    tip_region = box(-tip_width, 0, tip_width, 100)
+    tip_cut = tip_region.difference(aligned)
+    other_tip_cut = scale(tip_cut, xfact=-1, yfact=-1, origin=center)
+    return pointed.difference(tip_cut.union(other_tip_cut))
+
+
+def angular_ring(left, width, height, stroke):
+    """Use the O's 52-degree corners and offset every edge by the same amount."""
+    corner = height * (CORNER_HEIGHT / 100)
+    run = corner * DIAGONAL_RUN
+    bottom, top = 50 - height / 2, 50 + height / 2
+    right = left + width
+    outside = [
+        (left + run, bottom), (right - run, bottom), (right, bottom + corner), (right, top - corner),
+        (right - run, top), (left + run, top), (left, top - corner), (left, bottom + corner),
+    ]
+    return polygon(outside).difference(polygon(offset_edges(outside, -stroke)))
+
+
+def at_sign(weight):
+    """Join the inner O and the open outer ring at the O's bottom stroke."""
+    outer_width, outer_ratio, inner_width, inner_ratio, stroke = {
+        REGULAR: (78, 0.98, 38, 0.94, 9),
+        BOLD: (84, 1, 36, 1, 14),
+    }[weight]
+    outer_height = outer_width / outer_ratio
+    inner_height = inner_width / inner_ratio
+    rim = angular_ring(0, outer_width, outer_height, stroke)
+    core = angular_ring((outer_width - inner_width) / 2, inner_width, inner_height, stroke)
+    bottom = core.bounds[1]
+
+    # Open the lower-right rim and keep the tail level with the base of the O.
+    rim = rim.difference(box(outer_width * 0.69, rim.bounds[1] - 1, outer_width + 1, bottom))
+    tail_start = core.bounds[2] - inner_height * CORNER_HEIGHT / 100 * DIAGONAL_RUN
+    tail = box(tail_start, bottom, outer_width - stroke / 2, bottom + stroke)
+    return unary_union([rim, core, tail])
 
 
 def percent(weight):
@@ -266,7 +361,7 @@ def hollow_trill_diamond(weight):
     return diamond.difference(diamond.buffer(-stroke, join_style="mitre"))
 
 
-SYMBOLS = ".…,:;-/%+()'\"!?#&×·—=←→↑↓[]\\`*◇◆<>"
+SYMBOLS = ".…,:;-/%+()'\"!?#&×·—=←→↑↓[]\\`*◇◆<>$^~@"
 
 # Comma tails hang outside the spacing body, on the (left, right), so spacing is measured from the heads.
 TAIL_OVERHANGS = {",": (TAIL_RUN, 0), ";": (TAIL_RUN, 0), "'": (TAIL_RUN, 0), '"': (TAIL_RUN, 0), "`": (0, TAIL_RUN)}
@@ -320,6 +415,10 @@ def build_symbols(weight):
         "◆": trill_diamond(weight),
         "<": less,
         ">": reflect(less),
+        "$": dollar(weight),
+        "^": caret(weight),
+        "~": tilde(weight),
+        "@": at_sign(weight),
     }
     outlines, bodies = {}, {}
     for char, shape in shapes.items():
